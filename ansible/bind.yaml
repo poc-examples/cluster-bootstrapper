@@ -1,0 +1,29 @@
+---
+
+- hosts: all
+  become: true
+  vars_files:
+    - locker.yml
+  tasks:
+
+    - name: Update apt repo and cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Upgrade all packages
+      apt:
+        name: "*"
+        state: latest
+
+    - name: Include Role
+      include_role:
+        name: bind
+      vars:
+        arpa_zone: 50.168.192
+        dns_ip: 192.168.50.52
+        dns_records:
+          - { ip_last_octet: '52', hostname: 'ns1.cluster.internal.' }
+          - { ip_last_octet: '53', hostname: 'api.cluster.internal.' }
+          - { ip_last_octet: '51', hostname: 'api.cluster.internal.' }
+      when: "'bind' in group_names"

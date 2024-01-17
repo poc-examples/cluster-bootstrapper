@@ -1,0 +1,15 @@
+$TTL    5m
+$ORIGIN cluster.internal.
+@       IN      SOA     ns1.cluster.internal. root.cluster.internal. (
+                              1         ; Serial
+                             60         ; Refresh
+                             60         ; Retry
+                             60         ; Expire
+                             60 )       ; Negative Cache TTL
+;
+@           IN      NS      ns1.cluster.internal.
+;
+ns1         IN      A       192.168.50.52
+;
+api         IN      A       192.168.50.96
+;

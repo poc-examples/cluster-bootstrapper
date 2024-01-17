@@ -1,0 +1,7 @@
+---
+# handlers file for bind
+- name: Restart bind9 service
+  ansible.builtin.systemd:
+    name: bind9
+    state: restarted
+    enabled: yes

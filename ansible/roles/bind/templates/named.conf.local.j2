@@ -1,0 +1,16 @@
+# Create internal domains
+zone "cluster.internal" {
+    type master;
+    file "/etc/bind/cluster.internal.zone";
+};
+
+# Create reverse DNS lookups
+zone "{{ arpa_zone }}.in-addr.arpa" {
+    type master;
+    file "/etc/bind/{{ arpa_zone }}.in-addr.arpa.zone";
+};
+
+zone "apps.internal" {
+    type master;
+    file "/etc/bind/apps.internal.zone";
+};
