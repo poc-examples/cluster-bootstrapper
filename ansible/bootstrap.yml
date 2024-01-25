@@ -14,6 +14,13 @@
   vars_files:
     - vars.yaml
 
+      ## vars.yaml should include the following in this example
+      # root_vault:
+      #   client_id: "<client_id>"
+      #   client_secret: "<client_secret>"
+      #   tenant_id: "<tenant_id>"
+      #   vault_url: "<vault_url>"
+
   tasks:
 
     - name: Ensure GitOps Namespace
@@ -56,112 +63,69 @@
         state: present
         src: "manifests/external-secrets/operator.yaml"
 
-    # - name: Ensure Azure Key Vault Secret
-    #   community.okd.k8s:
-    #     host: "{{ openshift_api_url }}"
-    #     api_key: "{{ openshift_token }}"
-    #     validate_certs: "{{ openshift_validate_certs }}"
-    #     state: present
-    #     definition:
-    #       apiVersion: v1
-    #       data:
-    #         client-id: "{{ root_vault.client_id }}"
-    #         client-secret: "{{ root_vault.client_secret }}"
-    #       kind: Secret
-    #       metadata:
-    #         creationTimestamp: null
-    #         name: azure-eso-secret
-    #         namespace: openshift-operators
+    - name: Ensure Azure Key Vault Secret
+      community.okd.k8s:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        state: present
+        definition:
+          apiVersion: v1
+          data:
+            client-id: "{{ root_vault.client_id | b64encode }}"
+            client-secret: "{{ root_vault.client_secret | b64encode }}"
+          kind: Secret
+          metadata:
+            name: azure-eso-secret
+            namespace: openshift-operators
 
-    # - name: Ensure External Secrets Subscription
-    #   community.okd.k8s:
-    #     host: "{{ openshift_api_url }}"
-    #     api_key: "{{ openshift_token }}"
-    #     validate_certs: "{{ openshift_validate_certs }}"
-    #     state: present
-    #     definition:
-    #       apiVersion: external-secrets.io/v1alpha1
-    #       kind: ClusterSecretStore
-    #       metadata:
-    #         name: eso-secret-store
-    #         namespace: openshift-operators
-    #       spec:
-    #         provider:
-    #           azurekv:
-    #             tenantId: "{{ root_vault.tenant_id }}"
-    #             vaultUrl: "{{ root_vault.vault_url }}"
-    #             authSecretRef:
-    #               clientId:
-    #                 name: azure-eso-secret
-    #                 key: client-id
-    #               clientSecret:
-    #                 name: azure-eso-secret
-    #                 key: client-secret
+    - name: Ensure External - Secrets Cluster Secret Store
+      community.okd.k8s:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        state: present
+        definition:
+          apiVersion: external-secrets.io/v1alpha1
+          kind: ClusterSecretStore
+          metadata:
+            name: eso-secret-store
+            namespace: openshift-operators
+          spec:
+            provider:
+              azurekv:
+                tenantId: "{{ root_vault.tenant_id }}"
+                vaultUrl: "{{ root_vault.vault_url }}"
+                authSecretRef:
+                  clientId:
+                    name: azure-eso-secret
+                    namespace: openshift-operators
+                    key: client-id
+                  clientSecret:
+                    name: azure-eso-secret
+                    namespace: openshift-operators
+                    key: client-secret
 
-    # - name: Ensure Test Secret 
-    #   community.okd.k8s:
-    #     host: "{{ openshift_api_url }}"
-    #     api_key: "{{ openshift_token }}"
-    #     validate_certs: "{{ openshift_validate_certs }}"
-    #     state: absent
-    #     definition:
-    #       apiVersion: external-secrets.io/v1beta1
-    #       kind: ExternalSecret
-    #       metadata:
-    #         name: eso-external-secret
-    #         namespace: openshift-operators
-    #       spec:
-    #         refreshInterval: "1h"
-    #         secretStoreRef:
-    #           name: eso-secret-store
-    #           kind: ClusterSecretStore
-    #         target:
-    #           name: example-secret
-    #           creationPolicy: Owner
-    #         data:
-    #         - secretKey: example
-    #           remoteRef:
-    #             key: secret/github-pat
+    - name: Ensure Test Secret 
+      community.okd.k8s:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        state: absent
+        src: "manifests/external-secrets/test.yaml"
 
-    # - name: Ensure Repository Connection 
-    #   community.okd.k8s:
-    #     host: "{{ openshift_api_url }}"
-    #     api_key: "{{ openshift_token }}"
-    #     validate_certs: "{{ openshift_validate_certs }}"
-    #     state: present
-    #     definition:
-    #       apiVersion: external-secrets.io/v1beta1
-    #       kind: ExternalSecret
-    #       metadata:
-    #         name: source-control-connection
-    #         namespace: openshift-gitops
-    #         annotations:
-    #           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-    #         labels:
-    #           argocd.argoproj.io/secret-type: repository
-    #           repo: source-control-connection
-    #           type: apps-controller
-    #       spec:
-    #         refreshInterval: 1h
-    #         secretStoreRef:
-    #           name: eso-secret-store
-    #           kind: ClusterSecretStore
-    #         target:
-    #           name: source-control-connection
-    #           creationPolicy: Owner
-    #         data:
-    #           - remoteRef:
-    #               key: secret/type
-    #             secretKey: type
-    #           - remoteRef:
-    #               key: secret/github-pat
-    #             secretKey: password
-    #           - remoteRef:
-    #               key: secret/github-username
-    #             secretKey: username
-    #           - remoteRef:
-    #               key: secret/repo-url
-    #             secretKey: url
-    #           - remoteRef:
-    #               key: secret/project
-    #             secretKey: project
+    - name: Ensure Repository Connection 
+      community.okd.k8s:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        state: present
+        src: "manifests/gitops/repo-connection.yaml"
+
+    - name: Ensure Root App-of-Apps Configuration 
+      community.okd.k8s:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        state: present
+        src: "manifests/gitops/root-app.yaml"

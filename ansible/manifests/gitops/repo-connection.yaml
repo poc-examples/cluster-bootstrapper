@@ -1,0 +1,35 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: source-control-connection
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    argocd.argoproj.io/secret-type: repository
+    repo: source-control-connection
+    type: apps-controller
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: eso-secret-store
+    kind: ClusterSecretStore
+  target:
+    name: source-control-connection
+    creationPolicy: Owner
+  data:
+    - remoteRef:
+        key: secret/type
+      secretKey: type
+    - remoteRef:
+        key: secret/github-pat
+      secretKey: password
+    - remoteRef:
+        key: secret/github-username
+      secretKey: username
+    - remoteRef:
+        key: secret/repo-url
+      secretKey: url
+    - remoteRef:
+        key: secret/project
+      secretKey: project
