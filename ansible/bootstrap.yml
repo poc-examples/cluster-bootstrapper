@@ -22,12 +22,7 @@
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
         state: present
-        definition:
-          apiVersion: v1
-          kind: Namespace
-          name: "{{ gitops_namespace }}"
-          metadata:
-            name: "{{ gitops_namespace }}"
+        src: "manifests/gitops/namespace.yaml"
 
     - name: Ensure ARGOCD Subscription
       community.okd.k8s:
@@ -35,23 +30,7 @@
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
         state: present
-        definition:
-          apiVersion: operators.coreos.com/v1alpha1
-          kind: Subscription
-          metadata:
-            name: openshift-gitops-operator
-            namespace: openshift-operators
-          spec:
-            config:
-              env:
-              - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
-                value: openshift-gitops
-            channel: gitops-1.8
-            installPlanApproval: Automatic
-            name: openshift-gitops-operator
-            source: redhat-operators
-            sourceNamespace: openshift-marketplace
-            startingCSV: openshift-gitops-operator.v1.8.5
+        src: "manifests/gitops/subscription.yaml"
 
     - name: Ensure Creator RBAC
       community.okd.k8s:
@@ -73,42 +52,24 @@
             name: cluster-admin
             apiGroup: rbac.authorization.k8s.io
 
-    # - name: Patch Argocd Secret
-    #   community.okd.k8s:
-    #     host: "{{ openshift_api_url }}"
-    #     api_key: "{{ openshift_token }}"
-    #     validate_certs: "{{ openshift_validate_certs }}"
-    #     state: absent
-    #     definition:
-    #       api_version: v1
-    #       kind: Secret
-    #       metadata:
-    #         namespace: openshift-gitops
-    #         name: argocd-cluster
-    #       stringData:
-    #         admin.password: "Cbe204224!"
-    #           # admin.passwordMtime: "{{ lookup('pipe', 'date +%FT%T%Z') }}"
-
-
-
-    # - name: Ensure External Secrets Subscription
-    #   community.okd.k8s:
-    #     host: "{{ openshift_api_url }}"
-    #     api_key: "{{ openshift_token }}"
-    #     validate_certs: "{{ openshift_validate_certs }}"
-    #     state: present
-    #     definition:
-    #       apiVersion: operators.coreos.com/v1alpha1
-    #       kind: Subscription
-    #       metadata:
-    #         name: external-secrets-operator
-    #         namespace: openshift-operators
-    #       spec:
-    #         channel: stable
-    #         installPlanApproval: Automatic
-    #         name: external-secrets-operator
-    #         source: community-operators
-    #         sourceNamespace: openshift-marketplace
+    - name: Ensure External Secrets Subscription
+      community.okd.k8s:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        state: present
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: external-secrets-operator
+            namespace: openshift-operators
+          spec:
+            channel: stable
+            installPlanApproval: Automatic
+            name: external-secrets-operator
+            source: community-operators
+            sourceNamespace: openshift-marketplace
 
     # - name: Ensure External Secrets Operator
     #   community.okd.k8s:
