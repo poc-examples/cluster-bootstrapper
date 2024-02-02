@@ -12,8 +12,8 @@ spec:
     namespace: openshift-gitops
     server: 'https://kubernetes.default.svc'
   source:
-    repoURL: 'https://github.com/poc-examples/app-of-apps'
-    path: '.'
+    repoURL: 'https://github.com/objectworks-ml-tools-lab/app-manifests'
+    path: 'openshift-lab-services'
     version: v3
     targetRevision: HEAD
   project: default

@@ -6,11 +6,13 @@
   gather_facts: no
   collections:
     - community.okd
+    - community.kubernetes
 
   vars:
     openshift_api_url: "{{ lookup('ansible.builtin.env', 'OPENSHIFT_API_URL') }}"
     openshift_token: "{{ lookup('ansible.builtin.env', 'OPENSHIFT_TOKEN') }}"
     openshift_validate_certs: false
+    state: present
   vars_files:
     - vars.yaml
 
@@ -28,7 +30,7 @@
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/gitops/namespace.yaml"
 
     - name: Ensure ARGOCD Subscription
@@ -36,7 +38,7 @@
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/gitops/subscription.yaml"
 
     - name: Ensure Creator RBAC
@@ -44,7 +46,7 @@
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/gitops/rbac.yaml"
 
     - name: Ensure External Secrets Subscription
@@ -52,15 +54,47 @@
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/external-secrets/subscription.yaml"
+
+
+    # May need to wait for things to become available on next cluster create
+
+    - name: Wait for External Secrets CRD availability
+      community.kubernetes.k8s_info:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        api_version: apiextensions.k8s.io/v1
+        kind: CustomResourceDefinition
+        name: externalsecrets.external-secrets.io
+      register: crd_check
+      until: crd_check.resources | length > 0
+      retries: 20
+      delay: 15
+
+
+    - name: Wait for External Secrets catalog to be running
+      community.kubernetes.k8s_info:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        kind: Deployment
+        name: external-secrets-operator-controller-manager
+        namespace: openshift-operators
+      register: operator_status
+      until:
+        - operator_status.resources | length > 0
+        - operator_status.resources[0].status.readyReplicas | default(0) > 0
+      retries: 20
+      delay: 15
 
     - name: Ensure External Secrets Operator
       community.okd.k8s:
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/external-secrets/operator.yaml"
 
     - name: Ensure Azure Key Vault Secret
@@ -68,7 +102,7 @@
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         definition:
           apiVersion: v1
           data:
@@ -79,12 +113,27 @@
             name: azure-eso-secret
             namespace: openshift-operators
 
+    - name: Wait for External Secrets Operator to be running
+      community.kubernetes.k8s_info:
+        host: "{{ openshift_api_url }}"
+        api_key: "{{ openshift_token }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        kind: Deployment
+        name: external-secrets-webhook
+        namespace: openshift-operators
+      register: operator_status
+      until:
+        - operator_status.resources | length > 0
+        - operator_status.resources[0].status.readyReplicas | default(0) > 0
+      retries: 20
+      delay: 15
+
     - name: Ensure External - Secrets Cluster Secret Store
       community.okd.k8s:
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         definition:
           apiVersion: external-secrets.io/v1alpha1
           kind: ClusterSecretStore
@@ -106,20 +155,35 @@
                     namespace: openshift-operators
                     key: client-secret
 
-    - name: Ensure Test Secret 
+    # - name: Ensure Test Secret 
+    #   community.okd.k8s:
+    #     host: "{{ openshift_api_url }}"
+    #     api_key: "{{ openshift_token }}"
+    #     validate_certs: "{{ openshift_validate_certs }}"
+    #     state: absent
+    #     src: "manifests/external-secrets/test.yaml"
+
+    - name: Patch ArgoCD Custom Resource to Enable Helm
       community.okd.k8s:
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: absent
-        src: "manifests/external-secrets/test.yaml"
+        state: present
+        definition:
+          apiVersion: argoproj.io/v1beta1
+          kind: ArgoCD
+          metadata:
+            name: openshift-gitops
+            namespace: openshift-gitops
+          spec:
+            kustomizeBuildOptions: '--enable-helm'
 
     - name: Ensure Repository Connection 
       community.okd.k8s:
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/gitops/repo-connection.yaml"
 
     - name: Ensure Root App-of-Apps Configuration 
@@ -127,5 +191,5 @@
         host: "{{ openshift_api_url }}"
         api_key: "{{ openshift_token }}"
         validate_certs: "{{ openshift_validate_certs }}"
-        state: present
+        state: "{{ state }}"
         src: "manifests/gitops/root-app.yaml"

@@ -10,7 +10,7 @@ metadata:
     repo: source-control-connection
     type: apps-controller
 spec:
-  refreshInterval: 1h
+  refreshInterval: 1m
   secretStoreRef:
     name: eso-secret-store
     kind: ClusterSecretStore
