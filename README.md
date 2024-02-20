@@ -52,8 +52,8 @@ ansible-galaxy collection install community.okd community.kubernetes
 
 - ### Deployment
 
-    1. Configure your cloud provider credentials as per the vars.yaml structure.
-    2. Execute the Ansible playbook:
+    - Configure your cloud provider credentials as per the vars.yaml structure.
+    - Execute the Ansible playbook:
 
 ```
 make default
