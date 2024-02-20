@@ -39,7 +39,7 @@ To kickstart your project:
 Clone the repository to your local machine.
 Install Ansible and the necessary collections for Kubernetes and OpenShift management.
 
-## Prerequisites
+### Prerequisites
 
 - Access to an OpenShift cluster.
 - Ansible installed on your local machine.
@@ -50,7 +50,7 @@ sudo apt update && sudo apt install ansible
 ansible-galaxy collection install community.okd community.kubernetes
 ```
 
-## Installing
+### Deployment
 
 1. Configure your cloud provider credentials as per the vars.yaml structure.
 2. Execute the Ansible playbook:
@@ -61,11 +61,7 @@ make default
 
 Finish with a demonstration of retrieving a managed secret within your OpenShift project.
 
-## Running the Tests
-
-ToDo
-
-## Deployment
+## Considerations
 
 For live systems, ensure you have robust IAM policies and access controls in place to secure the cloud secret stores.
 
