@@ -17,10 +17,10 @@ The project utilizes Ansible roles and collections to configure and deploy Exter
 
 To implement this pattern in your project, follow these steps:
 
-1. Prepare Your Environment: Ensure you have access to an OpenShift cluster and the necessary cloud provider accounts.
-2. Configure Ansible: Set up Ansible with the required collections and roles as detailed in the provided playbook examples.
-3. Customize Variables: Adjust the variables in vars.yaml to match your cloud provider and secrets configuration.
-4. Execute the Playbook: Run the Ansible playbook to deploy the External Secrets Operator and configure it to work with your secret store.
+1. **Prepare Your Environment**: Ensure you have access to an OpenShift cluster and the necessary cloud provider accounts.
+2. **Configure Ansible**: Set up Ansible with the required collections and roles as detailed in the provided playbook examples.
+3. **Customize Variables**: Adjust the variables in vars.yaml to match your cloud provider and secrets configuration.
+4. **Execute the Playbook**: Run the Ansible playbook to deploy the External Secrets Operator and configure it to work with your secret store.
 
 Refer to the linked Slide Deck for an in-depth exploration of the configuration and deployment processes.
 
