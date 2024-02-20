@@ -39,7 +39,7 @@ To kickstart your project:
 Clone the repository to your local machine.
 Install Ansible and the necessary collections for Kubernetes and OpenShift management.
 
-### Prerequisites
+- ### Prerequisites
 
 - Access to an OpenShift cluster.
 - Ansible installed on your local machine.
@@ -50,7 +50,7 @@ sudo apt update && sudo apt install ansible
 ansible-galaxy collection install community.okd community.kubernetes
 ```
 
-### Deployment
+- ### Deployment
 
 1. Configure your cloud provider credentials as per the vars.yaml structure.
 2. Execute the Ansible playbook:
