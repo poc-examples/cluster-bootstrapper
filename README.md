@@ -44,25 +44,28 @@ ansible-galaxy collection install community.okd community.kubernetes
 
 ## Installing
 
-A step by step series of examples that tell you how to get a development environment running:
+1. Configure your cloud provider credentials as per the vars.yaml structure.
+2. Execute the Ansible playbook:
 
-```Give the example```
+```
+make default
+```
 
-End with an example of getting some data out of the system or using it for a little demo.
+Finish with a demonstration of retrieving a managed secret within your OpenShift project.
 
 ## Running the Tests
 
-Explain how to run the automated tests for this system. Include any relevant commands.
+ToDo
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system.
+For live systems, ensure you have robust IAM policies and access controls in place to secure the cloud secret stores.
 
 ## Built With
 
-- Tool/Framework 1 - The web framework used
-- Tool/Framework 2 - Dependency Management
-- Tool/Framework 3 - Used to generate RSS Feeds
+- **Ansible** - Automation tool for cloud operations.
+- **OpenShift** - Container orchestration platform.
+- **AWS Secrets Manager/Azure Key Vault** - Cloud secrets management services.
 
 ## Contributing
 
@@ -84,4 +87,4 @@ This project is licensed under the LICENSE.md file for details.
 
 ## Acknowledgments
 
-Hat tip to anyone whose code was used Inspiration.
+Thanks to anyone whose code was used Inspiration.
