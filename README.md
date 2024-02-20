@@ -41,9 +41,9 @@ Install Ansible and the necessary collections for Kubernetes and OpenShift manag
 
 - ### Prerequisites
 
-- Access to an OpenShift cluster.
-- Ansible installed on your local machine.
-- Cloud provider accounts and configured permissions for secrets management.
+    - Access to an OpenShift cluster.
+    - Ansible installed on your local machine.
+    - Cloud provider accounts and configured permissions for secrets management.
 
 ```
 sudo apt update && sudo apt install ansible
