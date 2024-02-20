@@ -3,15 +3,23 @@
 - Presentation: [Slide Deck](https://docs.google.com/presentation/d/1NAMgU_SqTCjSY3XRqQJFdizHI6EJbvp6Cvk6zzDKinc/view)
 - Demonstration: [Example Deployment](https://www.youtube.com/)
 
-This project focuses on integrating External Secrets Management solutions with OpenShift clusters to enhance cloud-native security practices. By leveraging the automation capabilities of Ansible, the project streamlines the setup of base operators for managing secrets across multiple cloud providers, such as AWS and Azure, directly within Kubernetes environments. This approach mitigates the risks associated with hardcoded or poorly managed secrets, thus solving a critical problem in cloud security and DevOps.
+This project aims to bolster cloud-native security and operational efficiency in OpenShift environments through the integration of GitOps practices and External Secrets Management solutions. 
+
+Utilizing Ansible's automation capabilities, the initiative facilitates the seamless setup of foundational operators. These operators enable the management of secrets across diverse cloud platforms (such as AWS and Azure) and the adoption of GitOps workflows, streamlining application deployment and management directly within Kubernetes ecosystems. 
+
+This dual approach not only addresses the critical security concerns associated with hardcoded or poorly managed secrets but also enhances deployment consistency, scalability, and recovery, marking a significant advancement in cloud security and DevOps practices.
 
 ## Why This Pattern
 
-The adoption of this pattern is motivated by the need for secure, automated secrets management in cloud-native applications. Managing secrets effectively reduces potential attack vectors and simplifies compliance with security standards. This pattern is particularly applicable in environments where security and automation are paramount, offering a scalable way to manage sensitive configurations without compromising security.
+This project integrates Ansible-driven deployment of External Secrets Operators and GitOps methodologies within an OpenShift framework, enabling secure, automated management of secrets via cloud services like Azure Key Vault and AWS Secrets Manager, alongside streamlined application deployment through GitOps tools such as ArgoCD. 
+
+This dual-faceted approach dynamically provisions secrets directly into the cluster while managing application lifecycles entirely through Git, enhancing security, operational transparency, and consistency across cloud-native environments. Together, these strategies offer a robust solution for secure data access and efficient application management.
 
 ## How It Works
 
-The project utilizes Ansible roles and collections to configure and deploy External Secrets Operators in an OpenShift cluster. These operators interact with cloud-specific secrets management services (like Azure Key Vault or AWS Secrets Manager) to dynamically inject secrets into the cluster, ensuring that applications have access to up-to-date credentials without direct access to the secret stores themselves.
+This project leverages Ansible for the deployment of External Secrets Operators and GitOps tools within an OpenShift environment, enabling secure, dynamic provisioning of secrets from services like Azure Key Vault or AWS Secrets Manager directly into the cluster. Concurrently, it adopts GitOps practices using tools such as ArgoCD to automate and manage deployments based on Git as the single source of truth. 
+
+This integrated approach ensures secure access to up-to-date credentials and streamlines application lifecycle management, enhancing operational efficiency, security, and compliance in cloud-native ecosystems.
 
 ## How to Implement
 
