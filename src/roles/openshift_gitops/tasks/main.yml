@@ -83,3 +83,39 @@
         namespace: "{{ gitops.namespace }}"
       spec:
         kustomizeBuildOptions: '--enable-helm'
+
+- name: OpenShift GitOps - Install Plugin
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: "{{ gitops.plugin.name }}"
+        namespace: "{{ gitops.namespace }}"
+        labels:
+          name: "{{ gitops.plugin.name }}"
+          type: plugin
+      spec:
+        destination:
+          namespace: "{{ gitops.namespace }}"
+          server: 'https://kubernetes.default.svc'
+        source:
+          repoURL: "https://github.com/{{ gitops.plugin.repo }}"
+          path: 'apps'
+          version: v3
+          targetRevision: HEAD
+        project: default
+        syncPolicy:
+          managedNamespaceMetadata:
+            labels:
+              argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
+          syncOptions:
+            - CreateNamespace=false
+          automated:
+            prune: true
+            selfHeal: false
+  when: gitops.plugin.name is defined

@@ -1,4 +1,4 @@
 SHELL := /bin/bash
 
-default: 
+init: 
 	@ansible-playbook src/bootstrap.yaml

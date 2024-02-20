@@ -12,7 +12,7 @@
     state: present
   
   vars_files:
-    - vars.yaml
+    - ../vars.yaml
 
   roles:
     - external_secrets

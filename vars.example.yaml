@@ -33,6 +33,11 @@ gitops:
 
   namespace: openshift-gitops
 
+  # plugin: 
+  #   repo: # poc-examples/ml-app-of-apps
+  #   name: # ml-app-demo
+
 external_secrets:
 
   namespace: external-secrets
+
