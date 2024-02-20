@@ -1,8 +1,8 @@
 apiVersion: operator.external-secrets.io/v1alpha1
 kind: OperatorConfig
 metadata:
-  name: external-secrets
-  namespace: openshift-operators
+  name: "{{ external_secrets.namespace }}"
+  namespace: "{{ external_secrets.namespace }}"
 spec:
   affinity: {}
   certController:

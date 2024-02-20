@@ -1,0 +1,19 @@
+---
+
+- name: Setup Base Operators
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  collections:
+    - community.okd
+    - community.kubernetes
+
+  vars:
+    state: present
+  
+  vars_files:
+    - vars.yaml
+
+  roles:
+    - external_secrets
+    - openshift_gitops

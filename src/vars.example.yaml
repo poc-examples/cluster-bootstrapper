@@ -1,0 +1,38 @@
+openshift:
+
+  token: "<OPENSHIFT_TOKEN>"
+  api_url: "<OPENSHIFT_API_URL>"
+  validate_certs: false
+
+operators:
+
+  gitops:
+    namespace: openshift-operators
+    channel: gitops-1.11
+
+  external_secrets:
+    namespace: openshift-operators
+    channel: stable
+
+secrets:
+
+  namespace: openshift-operators
+
+  # azure:
+  #   client_id: "<CLIENT_ID>"
+  #   client_secret: "<CLIENT_SECRET>"
+  #   tenant_id: "<TENANT_ID>"
+  #   vault_url: "<VAULT_URL>"
+
+  # aws:
+  #   access_key_id: "<AWS_ACCESS_KEY_ID>"
+  #   secret_access_key: "<AWS_SECRET_ACCESS_KEY>"
+  #   default_region: "<AWS_DEFAULT_REGION>"
+
+gitops:
+
+  namespace: openshift-gitops
+
+external_secrets:
+
+  namespace: external-secrets
