@@ -15,5 +15,6 @@
     - ../vars.yaml
 
   roles:
-    - external_secrets
-    - openshift_gitops
+    - machines
+    # - external_secrets
+    # - openshift_gitops
