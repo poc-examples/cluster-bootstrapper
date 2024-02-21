@@ -4,6 +4,14 @@ openshift:
   api_url: "<OPENSHIFT_API_URL>"
   validate_certs: false
 
+  # machines:
+
+  #   - spot: true
+  #     gpu: true
+  #     replicas: 1
+  #     location: eastus
+  #     zone: "1"
+
 operators:
 
   gitops:
