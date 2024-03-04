@@ -76,6 +76,22 @@
         token: "cm9vdA=="
   when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
+- name: Vault - Create Admin Vault Credentials
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: vault-token
+        namespace: "{{ external_secrets.namespace }}"
+      data:
+        token: "cm9vdA=="
+  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
+
 - name: Vault - Create Vault Credentials
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
@@ -89,6 +105,34 @@
         name: vault-backend
         namespace: vault-server
       spec:
+        provider:
+          vault:
+            server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"
+            path: "secret"
+            version: "v2"
+            auth:
+              tokenSecretRef:
+                name: "vault-token"
+                key: "token"
+  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
+
+- name: Vault - Create Cluster Admin Vault Credentials
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: external-secrets.io/v1beta1
+      kind: ClusterSecretStore
+      metadata:
+        name: eso-admin-secret-store
+        namespace: "{{ external_secrets.namespace }}"
+      spec:
+        conditions:
+          - namespaces:
+            - "{{ external_secrets.namespace }}"
+            - "cluster-secrets-admin"
         provider:
           vault:
             server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"
