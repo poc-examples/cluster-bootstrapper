@@ -82,6 +82,9 @@
         name: "{{ gitops.namespace }}"
         namespace: "{{ gitops.namespace }}"
       spec:
+        server:
+          route:
+            enabled: true
         kustomizeBuildOptions: '--enable-helm'
 
 - name: OpenShift GitOps - Install Plugin
@@ -96,6 +99,8 @@
       metadata:
         name: "{{ gitops.plugin.name }}"
         namespace: "{{ gitops.namespace }}"
+        annotations:
+          argocd.argoproj.io/sync-wave: 0
         labels:
           name: "{{ gitops.plugin.name }}"
           type: plugin
@@ -105,7 +110,7 @@
           server: 'https://kubernetes.default.svc'
         source:
           repoURL: "https://github.com/{{ gitops.plugin.repo }}"
-          path: 'apps'
+          path: "{{ gitops.plugin.path }}"
           version: v3
           targetRevision: HEAD
         project: default

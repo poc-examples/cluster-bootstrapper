@@ -4,6 +4,9 @@ openshift:
   api_url: "<OPENSHIFT_API_URL>"
   validate_certs: false
 
+  # vault: 
+  #   enabled: true
+
   # machines:
 
   #   - spot: true
@@ -41,7 +44,7 @@ gitops:
 
   namespace: openshift-gitops
 
-  # plugin: 
+  # plugin:
   #   repo: # poc-examples/ml-app-of-apps
   #   name: # ml-app-demo
 

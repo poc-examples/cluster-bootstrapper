@@ -1,0 +1,4 @@
+vault:
+  secrets:
+    - key: vault-token
+      value: root
