@@ -19,3 +19,4 @@
     - external_secrets
     - openshift_gitops
     - vault
+    - gitops_plugins
