@@ -1,2 +1,2 @@
 vars.yaml
-src/vault/secrets.yaml
+src/manifests/vault/secrets.yaml
