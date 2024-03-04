@@ -44,9 +44,10 @@ gitops:
 
   namespace: openshift-gitops
 
-  # plugin:
-  #   repo: # poc-examples/ml-app-of-apps
-  #   name: # ml-app-demo
+  # plugins: 
+  #   - repo: poc-examples/managing-secrets
+  #     name: vault-csi-provider
+  #     path: patterns/secrets-csi-driver/foundational/app/vault
 
 external_secrets:
 
