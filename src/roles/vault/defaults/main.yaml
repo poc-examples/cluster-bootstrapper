@@ -1,5 +1,9 @@
 vault:
   pushsecrets:
+    - remoteKey: demo
+      secrets:
+        - key: vault-token
+          value: root
     - remoteKey: team-a-creds
       secrets:
         - key: token

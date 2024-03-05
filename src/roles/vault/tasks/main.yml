@@ -141,6 +141,7 @@
             auth:
               tokenSecretRef:
                 name: "vault-token"
+                namespace: "{{ external_secrets.namespace }}"
                 key: "token"
   when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
