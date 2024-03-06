@@ -1,0 +1,33 @@
+---
+
+- name: Vault - Create Server
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: "gitlab-plugin"
+        namespace: "{{ gitops.namespace }}"
+      spec:
+        destination:
+          namespace: "gitlab-system"
+          server: 'https://kubernetes.default.svc'
+        source:
+          repoURL: "https://github.com/poc-examples/code-respositories"
+          path: "patterns/gitlab/config"
+          version: v3
+          targetRevision: HEAD
+        project: default
+        syncPolicy:
+          managedNamespaceMetadata:
+            labels:
+              argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
+          syncOptions:
+            - CreateNamespace=true
+          automated:
+            prune: true
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
