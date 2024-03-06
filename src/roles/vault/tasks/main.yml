@@ -133,6 +133,7 @@
           - namespaces:
             - "{{ external_secrets.namespace }}"
             - "cluster-secrets-admin"
+            - "gitlab-system"
         provider:
           vault:
             server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"

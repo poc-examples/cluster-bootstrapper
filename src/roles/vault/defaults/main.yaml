@@ -4,6 +4,8 @@ vault:
       secrets:
         - key: vault-token
           value: root
+        - key: gitlab-pass
+          value: password
     - remoteKey: team-a-creds
       secrets:
         - key: token
