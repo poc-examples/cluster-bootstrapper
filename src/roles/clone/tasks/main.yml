@@ -130,6 +130,7 @@
         Authorization: Bearer {{ gitlab_access_token.json.access_token }}
     body: >
         {
-        "name": "managing secrets",
-        "import_url": "https://github.com/poc-examples/managing-secrets.git"
+        "name": "{{ item.name }}",
+        "import_url": "{{ item.url }}"
         }
+  loop: "{{ imports }}"
