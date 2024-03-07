@@ -1,2 +1,15 @@
 ---
 
+- name: Registry - Patch Ingress
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: imageregistry.operator.openshift.io/v1
+      kind: Config
+      metadata:
+        name: cluster
+      spec:
+        defaultRoute: true

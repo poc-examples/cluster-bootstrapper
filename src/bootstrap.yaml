@@ -20,5 +20,6 @@
     # - openshift_gitops
     # - vault
     # - gitlab
-    - clone
+    # - clone
+    - registry
     # - gitops_plugins
