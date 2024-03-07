@@ -20,6 +20,6 @@
     # - gitops
     # - vault
     # - gitlab
-    # - clone
+    # - imports
     - registry
-    # - gitops_plugins
+    # - plugins
