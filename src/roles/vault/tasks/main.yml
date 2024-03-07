@@ -1,17 +1,16 @@
 ---
 
-# - name: Ensure External Secrets Namespace
-#   community.okd.k8s:
-#     host: "{{ openshift.api_url }}"
-#     api_key: "{{ openshift.token }}"
-#     validate_certs: "{{ openshift.validate_certs }}"
-#     state: "{{ state }}"
-#     definition:
-#       apiVersion: v1
-#       kind: Namespace
-#       name: vault-server
-#       metadata:
-#         name: vault-server
+- name: Ensure External Secrets Namespace
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: vault-server
 
 - name: Vault - Create Server
   community.okd.k8s:

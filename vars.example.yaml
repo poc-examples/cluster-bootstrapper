@@ -18,6 +18,9 @@ openshift:
   #     location: eastus
   #     zone: "1"
 
+gitlab:
+  namespace: gitlab-system
+
 operators:
 
   gitops:

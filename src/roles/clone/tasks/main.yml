@@ -1,0 +1,14 @@
+---
+
+# - name: GitLab - Ensure Namespace
+#   community.okd.k8s:
+#     host: "{{ openshift.api_url }}"
+#     api_key: "{{ openshift.token }}"
+#     validate_certs: "{{ openshift.validate_certs }}"
+#     state: "{{ state }}"
+#     definition:
+#       apiVersion: v1
+#       kind: Namespace
+#       metadata:
+#         name: "{{ gitlab.namespace }}"
+#   when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true

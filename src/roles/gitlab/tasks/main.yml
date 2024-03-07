@@ -1,0 +1,150 @@
+---
+
+- name: GitLab - Ensure Namespace
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ gitlab.namespace }}"
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+
+- name: GitLab - Ensure Operator Group
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: "{{ gitlab.namespace }}-operatorgroup"
+        namespace: "{{ gitlab.namespace }}"
+      spec:
+        targetNamespaces:
+          - "{{ gitlab.namespace }}"
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+
+- name: CertMan - Ensure CertManager is Available
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        labels:
+          operators.coreos.com/cert-manager.openshift-operators: ""
+        name: cert-manager
+        namespace: openshift-operators
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: cert-manager
+        source: community-operators
+        sourceNamespace: openshift-marketplace
+        startingCSV: cert-manager.v1.14.2
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+
+- name: GitLab - Ensure Subscription
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        labels:
+          operators.coreos.com/gitlab-operator-kubernetes.gitlab-system: ""
+        name: gitlab-operator-kubernetes
+        namespace: "{{ gitlab.namespace }}"
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: gitlab-operator-kubernetes
+        source: certified-operators
+        sourceNamespace: openshift-marketplace
+        startingCSV: gitlab-operator-kubernetes.v0.29.2
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+
+- name: GitLab - Ensure IngressClass
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: networking.k8s.io/v1
+      kind: IngressClass
+      metadata:
+        name: gitlab-nginx
+        namespace: "{{ gitlab.namespace }}"
+      spec:
+        controller: "k8s.io/ingress-nginx"
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+
+# - debug:
+#     msg: "{{ openshift.api_url | regex_replace('^https://api\\.(.*):6443$', 'app.\\1') }}"
+
+- name: GitLab - Wait for CRDs
+  community.kubernetes.k8s_info:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: gitlabs.apps.gitlab.com
+  register: crd_check
+  until: crd_check.resources | length > 0
+  retries: 20
+  delay: 15
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+
+- name: GitLab - Create Server
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: apps.gitlab.com/v1beta1
+      kind: GitLab
+      metadata:
+        name: gitlab
+        namespace: "{{ gitlab.namespace }}"
+      spec:
+        chart:
+          values:
+            # nginx-ingress:
+            #   install: false
+            certmanager:
+              install: true
+            certmanager-issuer:
+              email: cengleby@redhat.com
+            gitlab:
+              migrations:
+                initialRootPassword:
+                  key: gitlab-pass
+                  secret: gitlab-root-password
+            global:
+              edition: ce
+              hosts:
+                domain: "{{ openshift.api_url | regex_replace('^https://api\\.(.*):6443$', 'apps.\\1') }}"
+              ingress:
+                class: none
+                annotations:
+                  route.openshift.io/termination: edge
+                configureCertmanager: false
+                tls:
+                  secretName: null
+          version: 7.9.2
+  when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true

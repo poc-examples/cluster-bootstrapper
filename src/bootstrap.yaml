@@ -16,7 +16,9 @@
 
   roles:
     # - machines
-    - external_secrets
-    - openshift_gitops
-    - vault
-    - gitops_plugins
+    # - external_secrets
+    # - openshift_gitops
+    # - vault
+    - gitlab
+    - clone
+    # - gitops_plugins
