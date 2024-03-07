@@ -19,6 +19,6 @@
     # - external_secrets
     # - openshift_gitops
     # - vault
-    - gitlab
+    # - gitlab
     - clone
     # - gitops_plugins

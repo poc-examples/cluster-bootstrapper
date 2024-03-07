@@ -1,14 +1,135 @@
 ---
 
-# - name: GitLab - Ensure Namespace
-#   community.okd.k8s:
-#     host: "{{ openshift.api_url }}"
-#     api_key: "{{ openshift.token }}"
-#     validate_certs: "{{ openshift.validate_certs }}"
-#     state: "{{ state }}"
-#     definition:
-#       apiVersion: v1
-#       kind: Namespace
-#       metadata:
-#         name: "{{ gitlab.namespace }}"
-#   when: openshift.gitlab.enabled is defined and openshift.gitlab.enabled is true
+# - debug:
+#     msg: "{{ gitlab.address }}"
+
+## WAIT FOR Webservers to be available
+
+## FETCH THE ROUTE
+
+## FETCH THE PASSWORD
+- name: Clone - Decode Admin Password
+  community.kubernetes.k8s_info:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    api_version: v1
+    kind: Secret
+    name: gitlab-gitlab-initial-root-password
+    namespace: "{{ gitlab.namespace }}"
+  register: gitlab_admin_secret
+
+- name: Decode the secret and register to a variable
+  set_fact:
+    decoded_secret: "{{ gitlab_admin_secret.resources[0].data.password | b64decode }}"
+
+# - debug:
+#     msg: "{{ decoded_secret }}"
+
+# Obtain Access Token
+- name: Clone - Obtain Access Token
+  uri:
+    url: "{{ gitlab.address }}/oauth/token"
+    method: POST
+    validate_certs: no
+    status_code: 200
+    body_format: json
+    headers:
+        Content-Type: application/json
+    body: >
+        {
+        "grant_type": "password",
+        "username": "root",
+        "password": "{{ decoded_secret }}"
+        }
+  register: gitlab_access_token
+
+- debug:
+    msg: "{{ gitlab_access_token.json.access_token }}"
+
+- name: Decode the secret and register to a variable
+  set_fact:
+    gitlab_token: "{{ gitlab_access_token.json.access_token }}"
+
+- name: GitLab - Create Demo User
+  uri:
+    url: "{{ gitlab.address }}/api/v4/users"
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code: 
+      - 200
+      - 201
+      - 409
+    headers:
+        Content-Type: application/json
+        Authorization: Bearer {{ gitlab_token }}
+    body: >
+        {
+        "name": "redhat user",
+        "email": "user@redhat.com",
+        "username": "redhat",
+        "password": "{{ gitlab_token }}"
+        }
+  register: user
+
+# - debug:
+#     msg: "{{ user }}"
+
+- name: GitLab - Enabled Import Via URL
+  uri:
+    url: "{{ gitlab.address }}/api/v4/application/settings"
+    method: PUT
+    validate_certs: no
+    status_code:
+        - 200
+        - 201
+        - 409
+        - 400
+    body_format: json
+    headers:
+        Content-Type: application/json
+        Authorization: Bearer {{ gitlab_access_token.json.access_token }}
+    body: >
+        {
+        "import_sources": ["git"]
+        }
+
+# LIST ALL PROJECTS
+# - name: GitLab - Import Project from GitHub
+#   uri:
+#     url: "{{ gitlab.address }}/api/v4/projects"
+#     method: GET
+#     validate_certs: no
+#     status_code:
+#         - 200
+#         - 201
+#         - 409
+#         - 400
+#     headers:
+#         Content-Type: application/json
+#         Authorization: Bearer {{ gitlab_access_token.json.access_token }}
+#   register: projects
+
+# - debug:
+#     msg: "{{ projects }}"
+
+- name: GitLab - Import Project from GitHub
+  uri:
+    url: "{{ gitlab.address }}/api/v4/projects"
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code:
+        - 200
+        - 201
+        - 409
+        - 400
+    headers:
+        Content-Type: application/json
+        Authorization: Bearer {{ gitlab_access_token.json.access_token }}
+    body: >
+        {
+        "name": "managing secrets",
+        "import_url": "https://github.com/poc-examples/managing-secrets.git"
+        }
