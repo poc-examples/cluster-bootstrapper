@@ -16,10 +16,10 @@
 
   roles:
     # - machines
-    # - external_secrets
-    # - gitops
-    # - vault
+    - external_secrets
+    - gitops
+    - vault
     # - gitlab
     # - imports
     - registry
-    # - plugins
+    - plugins

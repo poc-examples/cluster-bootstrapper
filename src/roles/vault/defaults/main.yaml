@@ -6,6 +6,16 @@ vault:
           value: root
         - key: gitlab-pass
           value: password
+        - key: username
+          value: <username>
+        - key: password
+          value: <password>
+        - key: email
+          value: <email>
+        - key: dockerregistryurl
+          value: <dockerregistryurl>
+        - key: auth
+          value: <auth>
     - remoteKey: team-a-creds
       secrets:
         - key: token
