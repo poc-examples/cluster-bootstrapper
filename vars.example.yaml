@@ -20,6 +20,7 @@ openshift:
 
 gitlab:
   namespace: gitlab-system
+  address: https://gitlab.<domain>
 
 operators:
 
@@ -47,6 +48,9 @@ secrets:
   #   default_region: "<AWS_DEFAULT_REGION>"
 
 gitops:
+
+  updater:
+    enabled: true
 
   namespace: openshift-gitops
 

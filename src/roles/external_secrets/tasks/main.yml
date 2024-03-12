@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure External Secrets Namespace
+- name: External Secrets - Ensure Namespace
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -9,11 +9,10 @@
     definition:
       apiVersion: v1
       kind: Namespace
-      name: "{{ external_secrets.namespace }}"
       metadata:
         name: "{{ external_secrets.namespace }}"
 
-- name: Ensure External Secrets Operator Group
+- name: External Secrets - Ensure Operator Group
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -29,7 +28,7 @@
         targetNamespaces:
           - "{{ external_secrets.namespace }}"
 
-- name: Ensure External Secrets Subscription
+- name: External Secrets - Ensure Subscription
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -48,7 +47,7 @@
         source: community-operators
         sourceNamespace: openshift-marketplace
 
-- name: Wait for External Secrets CRD availability
+- name: External Secrets - Wait CRDs Exists
   community.kubernetes.k8s_info:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -61,7 +60,7 @@
   retries: 20
   delay: 15
 
-- name: Wait for External Secrets catalog to be running
+- name: External Secrets - Wait Catalog is Running
   community.kubernetes.k8s_info:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -76,12 +75,12 @@
   retries: 20
   delay: 15
 
-- name: Generate External Secrets Operator
+- name: External Secrets - Generate Operator Manifests
   template:
     src: "manifests/external_secrets/operator.yaml.j2"
     dest: "manifests/external_secrets/operator.yaml"
 
-- name: Ensure External Secrets Operator
+- name: External Secrets - Ensure Operator
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -89,7 +88,7 @@
     state: "{{ state }}"
     src: "manifests/external_secrets/operator.yaml"
 
-- name: External Secrets Operator - Is Running State Check
+- name: External Secrets - Wait Webhook is Running
   community.kubernetes.k8s_info:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -200,29 +199,3 @@
             region: "{{ secrets.aws.default_region }}"
             service: SecretsManager
   when: secrets.aws is defined
-
-# - name: Ensure Test Secret 
-#   community.okd.k8s:
-#     host: "{{ openshift.api_url }}"
-#     api_key: "{{ openshift.token }}"
-#     validate_certs: "{{ openshift.validate_certs }}"
-#     state: "absent"
-#     definition:
-#       apiVersion: external-secrets.io/v1beta1
-#       kind: ExternalSecret
-#       metadata:
-#         name: eso-test-external-secret
-#         namespace: "{{ external_secrets.namespace }}"
-#       spec:
-#         refreshInterval: "1m"
-#         secretStoreRef:
-#           name: eso-admin-secret-store
-#           kind: ClusterSecretStore
-#         target:
-#           name: example-secret
-#           creationPolicy: Owner
-#         data:
-#         - secretKey: example
-#           remoteRef:
-#             key: secret/test
-#   when: secrets.azure is defined

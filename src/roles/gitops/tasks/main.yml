@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure GitOps Namespace
+- name: OpenShift GitOps - Ensure GitOps Namespace
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -9,11 +9,10 @@
     definition:
       apiVersion: v1
       kind: Namespace
-      name: "{{ gitops.namespace }}"
       metadata:
         name: "{{ gitops.namespace }}"
 
-- name: Ensure ARGOCD Subscription
+- name: OpenShift GitOps - Ensure GitOps Subscription
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -26,17 +25,13 @@
         name: "{{ gitops.namespace }}"
         namespace: "{{ operators.gitops.namespace }}"
       spec:
-        config:
-          env:
-          - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
-            value: "{{ gitops.namespace }}"
         channel: "{{ operators.gitops.channel }}"
         installPlanApproval: Automatic
         name: "openshift-gitops-operator"
         source: redhat-operators
         sourceNamespace: openshift-marketplace
 
-- name: Ensure Creator RBAC
+- name: OpenShift GitOps - Ensure Admin RBAC
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -69,7 +64,7 @@
   retries: 10
   delay: 10
 
-- name: Patch ArgoCD Custom Resource to Enable Helm
+- name: OpenShift GitOps - Enable Kustomization Helm Patch
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -86,3 +81,38 @@
           route:
             enabled: true
         kustomizeBuildOptions: '--enable-helm'
+
+- name: OpenShift GitOps - Ensure Image Updater
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: "image-updater-plugin"
+        namespace: "{{ gitops.namespace }}"
+        labels:
+          type: plugin
+      spec:
+        destination:
+          namespace: "{{ gitops.namespace }}"
+          server: 'https://kubernetes.default.svc'
+        source:
+          repoURL: "https://github.com/poc-examples/continuous-delivery"
+          path: "image-updater"
+          version: v3
+          targetRevision: HEAD
+        project: default
+        syncPolicy:
+          automated:
+            selfHeal: true
+          managedNamespaceMetadata:
+            labels:
+              argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
+          syncOptions:
+            - CreateNamespace=false
+            # - ServerSideApply=true # Allows patching in the namespace
+  when: gitops.updater.enabled is defined and gitops.updater.enabled is true

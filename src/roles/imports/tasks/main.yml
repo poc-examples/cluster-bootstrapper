@@ -23,8 +23,8 @@
   set_fact:
     decoded_secret: "{{ gitlab_admin_secret.resources[0].data.password | b64decode }}"
 
-# - debug:
-#     msg: "{{ decoded_secret }}"
+- debug:
+    msg: "{{ decoded_secret }}"
 
 # Obtain Access Token
 - name: Clone - Obtain Access Token

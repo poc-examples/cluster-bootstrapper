@@ -15,11 +15,40 @@
     - ../vars.yaml
 
   roles:
+
+    ## RedHat Supported
+    ## Adds Machines to existing cluster
     # - machines
-    - external_secrets
+
+    ## RedHat Supported
+    ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
+    ## Patches ArgoCD to use kustomize with helm plugin
+    ## Optionally - Also installs Image-Updater
     - gitops
-    - vault
-    # - gitlab
-    # - imports
+
+    ## Community Supported
+    ## No RedHat Option
+    ## Creates External Secrets Service
+    ## Optionally - Connects AWS Secrets Manager or Azure Key Vault w/ ClusterSecretStore
+    - external_secrets
+
+    ## RedHat Supported
+    ## Opens Traffic to Internal Image Registry 
     - registry
+
+    ## Certified Community Supported
+    ## No RedHat Option
+    ## Optionally Creates a Vault Instance to Store build Secrets
+    - vault
+
+    ## Certified GitLab Supported
+    ## No RedHat Options
+    ## Creates A GitLab Instance Open to External traffic at gitlab.<host>
+    ## Saves GitLab Password to Vault
+    - gitlab
+
+    ## Accepts a defined list of repositories and Imports them into GitLab.
+    - imports
+
+    ## Uses installable patterns(applications) in poc-examples repos to quickly proof concepts
     - plugins
