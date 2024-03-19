@@ -1,6 +1,5 @@
 imports:
   - name: "container library"
-    pipeline_url: ""
     url: "https://github.com/poc-examples/container-library.git"
   - name: "application catalog"
     url: "https://github.com/poc-examples/application-catalog.git"

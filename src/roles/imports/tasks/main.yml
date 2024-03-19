@@ -51,27 +51,27 @@
   set_fact:
     gitlab_token: "{{ gitlab_access_token.json.access_token }}"
 
-- name: GitLab - Create Demo User
-  uri:
-    url: "{{ gitlab.address }}/api/v4/users"
-    method: POST
-    validate_certs: no
-    body_format: json
-    status_code: 
-      - 200
-      - 201
-      - 409
-    headers:
-        Content-Type: application/json
-        Authorization: Bearer {{ gitlab_token }}
-    body: >
-        {
-        "name": "redhat user",
-        "email": "user@redhat.com",
-        "username": "redhat",
-        "password": "{{ gitlab_token }}"
-        }
-  register: user
+# - name: GitLab - Create Demo User
+#   uri:
+#     url: "{{ gitlab.address }}/api/v4/users"
+#     method: POST
+#     validate_certs: no
+#     body_format: json
+#     status_code: 
+#       - 200
+#       - 201
+#       - 409
+#     headers:
+#         Content-Type: application/json
+#         Authorization: Bearer {{ gitlab_token }}
+#     body: >
+#         {
+#         "name": "redhat user",
+#         "email": "user@redhat.com",
+#         "username": "redhat",
+#         "password": "{{ gitlab_token }}"
+#         }
+#   register: user
 
 # - debug:
 #     msg: "{{ user }}"

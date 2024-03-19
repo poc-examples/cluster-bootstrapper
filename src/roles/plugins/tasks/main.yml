@@ -12,11 +12,6 @@
       metadata:
         name: "{{ item.name }}"
         namespace: "{{ gitops.namespace }}"
-        annotations:
-          argocd.argoproj.io/sync-wave: "0"
-        labels:
-          name: "{{ item.name }}"
-          type: plugin
       spec:
         destination:
           namespace: "{{ gitops.namespace }}"
@@ -28,6 +23,9 @@
           targetRevision: HEAD
         project: default
         syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
           managedNamespaceMetadata:
             labels:
               argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
