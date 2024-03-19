@@ -1,5 +1,9 @@
 ---
 
+### NEED TO Create Gitlab and Set Root Password
+### OR Create a Admin User with Password
+### Prefer to feed in passwords from vars files
+
 - name: GitLab - Ensure Namespace
   community.okd.k8s:
     host: "{{ openshift.api_url }}"

@@ -1,201 +1,55 @@
 ---
 
-- name: External Secrets - Ensure Namespace
+## Install External Secrets From Helm Charts 
+## AS ARGOCD APPLICATION
+- name: External Secrets - Install Application
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
-      apiVersion: v1
-      kind: Namespace
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
       metadata:
-        name: "{{ external_secrets.namespace }}"
-
-- name: External Secrets - Ensure Operator Group
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: operators.coreos.com/v1
-      kind: OperatorGroup
-      metadata:
-        name: "{{ external_secrets.namespace }}-operatorgroup"
-        namespace: "{{ external_secrets.namespace }}"
+        name: "external-secrets-plugin"
+        namespace: "{{ gitops.namespace }}"
+        annotations:
+          argocd.argoproj.io/sync-wave: "-1"
       spec:
-        targetNamespaces:
-          - "{{ external_secrets.namespace }}"
+        destination:
+          namespace: "{{ openshift.services.external_secrets.namespace }}"
+          server: 'https://kubernetes.default.svc'
+        source:
+          repoURL: "https://github.com/poc-examples/charts"
+          path: "external_secrets"
+          version: v3
+          targetRevision: HEAD
+          helm:
+            valuesObject:  "{{ openshift.services.external_secrets.helmValues }}"
+        project: default
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          managedNamespaceMetadata:
+            labels:
+              argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
+          syncOptions:
+            - CreateNamespace=true
 
-- name: External Secrets - Ensure Subscription
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: operators.coreos.com/v1alpha1
-      kind: Subscription
-      metadata:
-        name: "{{ external_secrets.namespace }}"
-        namespace: "{{ external_secrets.namespace }}"
-      spec:
-        channel: "{{ operators.external_secrets.channel }}"
-        installPlanApproval: Automatic
-        name: "{{ external_secrets.namespace }}-operator"
-        source: community-operators
-        sourceNamespace: openshift-marketplace
-
-- name: External Secrets - Wait CRDs Exists
-  community.kubernetes.k8s_info:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    api_version: apiextensions.k8s.io/v1
-    kind: CustomResourceDefinition
-    name: externalsecrets.external-secrets.io
-  register: crd_check
-  until: crd_check.resources | length > 0
-  retries: 20
-  delay: 15
-
-- name: External Secrets - Wait Catalog is Running
-  community.kubernetes.k8s_info:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    kind: Deployment
-    name: "{{ external_secrets.namespace }}-operator-controller-manager"
-    namespace: "{{ external_secrets.namespace }}"
-  register: operator_status
-  until:
-    - operator_status.resources | length > 0
-    - operator_status.resources[0].status.readyReplicas | default(0) > 0
-  retries: 20
-  delay: 15
-
-- name: External Secrets - Generate Operator Manifests
-  template:
-    src: "manifests/external_secrets/operator.yaml.j2"
-    dest: "manifests/external_secrets/operator.yaml"
-
-- name: External Secrets - Ensure Operator
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    src: "manifests/external_secrets/operator.yaml"
-
+## VERIFY EXTERNAL SECRETS IS RUNNING BEFORE CONTINUING
 - name: External Secrets - Wait Webhook is Running
   community.kubernetes.k8s_info:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     kind: Deployment
-    name: "{{ external_secrets.namespace }}-webhook"
-    namespace: "{{ external_secrets.namespace }}"
+    name: "{{ openshift.services.external_secrets.namespace }}-webhook"
+    namespace: "{{ openshift.services.external_secrets.namespace }}"
   register: operator_status
   until:
     - operator_status.resources | length > 0
     - operator_status.resources[0].status.readyReplicas | default(0) > 0
   retries: 20
   delay: 15
-
-- name: External Secrets - Azure Key Vault Admin Secret
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: v1
-      data:
-        client-id: "{{ secrets.azure.client_id | b64encode }}"
-        client-secret: "{{ secrets.azure.client_secret | b64encode }}"
-      kind: Secret
-      metadata:
-        name: eso-admin-secret
-        namespace: "{{ external_secrets.namespace }}"
-  when: secrets.azure is defined
-
-- name: External Secrets - Azure Admin Secrets Cluster Secret Store
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: external-secrets.io/v1alpha1
-      kind: ClusterSecretStore
-      metadata:
-        name: eso-admin-secret-store
-        namespace: "{{ external_secrets.namespace }}"
-      spec:
-        namespaces:
-          - "{{ external_secrets.namespace }}"
-          - "{{ gitops.namespace }}"
-        provider:
-          azurekv:
-            tenantId: "{{ secrets.azure.tenant_id }}"
-            vaultUrl: "{{ secrets.azure.vault_url }}"
-            authSecretRef:
-              clientId:
-                name: eso-admin-secret
-                namespace: "{{ external_secrets.namespace }}"
-                key: client-id
-              clientSecret:
-                name: eso-admin-secret
-                namespace: "{{ external_secrets.namespace }}"
-                key: client-secret
-  when: secrets.azure is defined
-
-- name: External Secrets - AWS Admin Secret
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: v1
-      data:
-        access-key-id: "{{ secrets.aws.access_key_id | b64encode }}"
-        secret-access-key: "{{ secrets.aws.secret_access_key | b64encode }}"
-      kind: Secret
-      metadata:
-        name: eso-admin-secret
-        namespace: "{{ external_secrets.namespace }}"
-  when: secrets.aws is defined
-
-- name: External Secrets - AWS Admin Secrets Cluster Secret Store
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: external-secrets.io/v1beta1
-      kind: ClusterSecretStore
-      metadata:
-        name: eso-admin-secret-store
-        namespace: "{{ external_secrets.namespace }}"
-      spec:
-        namespaces:
-          - "{{ external_secrets.namespace }}"
-          - "{{ gitops.namespace }}"
-        provider:
-          aws:
-            auth:
-              secretRef:
-                accessKeyIDSecretRef:
-                  key: access-key
-                  namespace: "{{ external_secrets.namespace }}"
-                  name: eso-admin-secret
-                secretAccessKeySecretRef:
-                  key: secret-access-key
-                  namespace: "{{ external_secrets.namespace }}"
-                  name: eso-admin-secret
-            region: "{{ secrets.aws.default_region }}"
-            service: SecretsManager
-  when: secrets.aws is defined

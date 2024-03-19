@@ -4,23 +4,49 @@ openshift:
   api_url: "<OPENSHIFT_API_URL>"
   validate_certs: false
 
-  # vault: 
-  #   enabled: true
+  services:
 
-  # gitlab:
-  #   enabled: true
+    external_secrets:
+      enabled: true 
+      namespace: external-secrets
+      helmValues:
+        namespace: external-secrets
+        gitops:
+          namespace: openshift-gitops
+        subscription:
+          channel: stable
+        provider:
+          # azure:
+          #   client_id: "<client_id>"
+          #   client_secret: "<client_secret>"
+          #   tenant_id: "<tenant_id>"
+          #   vault_url: "https://<domain>.vault.azure.net"
+          # aws:
+          #   access_key_id: "<AWS_ACCESS_KEY_ID>"
+          #   secret_access_key: "<AWS_SECRET_ACCESS_KEY>"
+          #   default_region: "us-east-2"
+
+    vault: 
+      enabled: true
+
+    gitops:
+      enabled: true
+
+    gitlab:
+      enabled: false
+
 
   # machines:
 
-  #   - spot: true
+  #   - # spot: true
   #     gpu: true
   #     replicas: 1
   #     location: eastus
   #     zone: "1"
 
-gitlab:
-  namespace: gitlab-system
-  address: https://gitlab.<domain>
+# gitlab:
+#   namespace: gitlab-system
+#   address: https://gitlab.apps.<domain>
 
 operators:
 
@@ -36,17 +62,6 @@ secrets:
 
   namespace: openshift-operators
 
-  # azure:
-  #   client_id: "<CLIENT_ID>"
-  #   client_secret: "<CLIENT_SECRET>"
-  #   tenant_id: "<TENANT_ID>"
-  #   vault_url: "<VAULT_URL>"
-
-  # aws:
-  #   access_key_id: "<AWS_ACCESS_KEY_ID>"
-  #   secret_access_key: "<AWS_SECRET_ACCESS_KEY>"
-  #   default_region: "<AWS_DEFAULT_REGION>"
-
 gitops:
 
   updater:
@@ -58,8 +73,3 @@ gitops:
   #   - repo: poc-examples/managing-secrets
   #     name: vault-csi-provider
   #     path: patterns/secrets-csi-driver/foundational/app/vault
-
-external_secrets:
-
-  namespace: external-secrets
-

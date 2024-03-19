@@ -14,41 +14,66 @@
   vars_files:
     - ../vars.yaml
 
-  roles:
+  tasks:
 
-    ## RedHat Supported
-    ## Adds Machines to existing cluster
-    # - machines
+    # ## RedHat Supported
+    # ## Adds Machines to existing cluster
+    # - name: Machines
+    #   ansible.builtin.include_role:
+    #     name: machines
+    #   when: not idontwanttorun
 
     ## RedHat Supported
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
     ## Patches ArgoCD to use kustomize with helm plugin
     ## Optionally - Also installs Image-Updater
-    - gitops
+    - name: GitOps
+      ansible.builtin.include_role:
+        name: gitops
+      when: openshift.services.gitops.enabled is defined and openshift.services.gitops.enabled is true
 
     ## Community Supported
     ## No RedHat Option
     ## Creates External Secrets Service
     ## Optionally - Connects AWS Secrets Manager or Azure Key Vault w/ ClusterSecretStore
-    - external_secrets
+    - name: External Secrets
+      ansible.builtin.include_role:
+        name: external_secrets
+      when: openshift.services.external_secrets.enabled is defined and openshift.services.external_secrets.enabled is true
 
     ## RedHat Supported
-    ## Opens Traffic to Internal Image Registry 
-    - registry
+    ## Would want to be Quay but should probably roll it out with docker registry
+    ## Currently Opens Traffic to Internal Image Registry 
+    # - name: Internal Registry
+    #   ansible.builtin.include_role:
+    #     name: registry
+    #   when: services.registry.enabled is defined and services.registry.enabled is true
 
     ## Certified Community Supported
     ## No RedHat Option
     ## Optionally Creates a Vault Instance to Store build Secrets
-    - vault
+    # - name: Vault
+    #   ansible.builtin.include_role:
+    #     name: vault
+    #   when: services.vault.enabled is defined and services.vault.enabled is true
 
     ## Certified GitLab Supported
     ## No RedHat Options
     ## Creates A GitLab Instance Open to External traffic at gitlab.<host>
     ## Saves GitLab Password to Vault
-    - gitlab
+    # - name: GitLab
+    # ansible.builtin.include_role:
+    #   name: gitlab
+    # when: services.gitlab.enabled is defined and services.gitlab.enabled is true
 
     ## Accepts a defined list of repositories and Imports them into GitLab.
-    - imports
+    # - name: Import Repositories
+    # ansible.builtin.include_role:
+    #   name: imports
+    # when: services.gitlab.enabled is defined and services.gitlab.enabled is true
 
     ## Uses installable patterns(applications) in poc-examples repos to quickly proof concepts
-    - plugins
+    # - name: Sync Plugins
+    # ansible.builtin.include_role:
+    #   name: plugins
+    # when: gitops.plugins is defined
