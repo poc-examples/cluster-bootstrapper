@@ -4,6 +4,14 @@ openshift:
   api_url: "<OPENSHIFT_API_URL>"
   validate_certs: false
 
+  # machines:
+
+  #   - # spot: true
+  #     gpu: true
+  #     replicas: 1
+  #     location: eastus
+  #     zone: "1"
+
   services:
 
     gitops:
@@ -41,18 +49,6 @@ openshift:
     registry:
       enabled: false
 
-
-  # machines:
-
-  #   - # spot: true
-  #     gpu: true
-  #     replicas: 1
-  #     location: eastus
-  #     zone: "1"
-
-# gitlab:
-#   namespace: gitlab-system
-#   address: https://gitlab.apps.<domain>
 
 operators:
 

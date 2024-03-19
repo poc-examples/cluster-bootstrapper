@@ -66,14 +66,14 @@
         name: gitlab
       when: openshift.services.gitlab.enabled is defined and openshift.services.gitlab.enabled is true
 
-    ## Accepts a defined list of repositories and Imports them into GitLab.
-    # - name: Import Repositories
-    # ansible.builtin.include_role:
-    #   name: imports
-    # when: services.gitlab.enabled is defined and services.gitlab.enabled is true
+    # Accepts a defined list of repositories and Imports them into GitLab.
+    - name: Import Repositories
+      ansible.builtin.include_role:
+        name: imports
+      when: openshift.services.gitlab.enabled is defined and openshift.services.gitlab.enabled is true
 
-    ## Uses installable patterns(applications) in poc-examples repos to quickly proof concepts
-    # - name: Sync Plugins
-    # ansible.builtin.include_role:
-    #   name: plugins
-    # when: gitops.plugins is defined
+    # Uses installable patterns(applications) in poc-examples repos to quickly proof concepts
+    - name: Sync Plugins
+      ansible.builtin.include_role:
+        name: plugins
+      when: gitops.plugins is defined

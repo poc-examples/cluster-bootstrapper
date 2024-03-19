@@ -1,3 +1,7 @@
+gitlab:
+  namespace: "{{ openshift.services.gitlab.helmValues.namespace }}"
+  address: "https://gitlab.{{ openshift.services.gitlab.helmValues.domain }}"
+
 imports:
   - name: "container library"
     url: "https://github.com/poc-examples/container-library.git"
