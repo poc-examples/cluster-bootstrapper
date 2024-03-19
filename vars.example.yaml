@@ -6,6 +6,9 @@ openshift:
 
   services:
 
+    gitops:
+      enabled: true
+
     external_secrets:
       enabled: true 
       namespace: external-secrets
@@ -26,13 +29,16 @@ openshift:
           #   secret_access_key: "<AWS_SECRET_ACCESS_KEY>"
           #   default_region: "us-east-2"
 
-    vault: 
-      enabled: true
-
-    gitops:
+    vault:
       enabled: true
 
     gitlab:
+      enabled: true
+      helmValues:
+        namespace: gitlab-system
+        domain: apps.mcvga5r7.eastus.aroapp.io
+
+    registry:
       enabled: false
 
 
