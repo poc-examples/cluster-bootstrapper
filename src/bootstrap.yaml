@@ -41,21 +41,21 @@
         name: external_secrets
       when: openshift.services.external_secrets.enabled is defined and openshift.services.external_secrets.enabled is true
 
-    ## RedHat Supported
-    ## Would want to be Quay but should probably roll it out with docker registry
-    ## Currently Opens Traffic to Internal Image Registry 
-    # - name: Internal Registry
-    #   ansible.builtin.include_role:
-    #     name: registry
-    #   when: services.registry.enabled is defined and services.registry.enabled is true
+    # RedHat Supported
+    # Would want to be Quay but should probably roll it out with docker registry
+    # Currently Opens Traffic to Internal Image Registry 
+    - name: Internal Registry
+      ansible.builtin.include_role:
+        name: registry
+      when: openshift.services.registry.enabled is defined and openshift.services.registry.enabled is true
 
-    ## Certified Community Supported
-    ## No RedHat Option
-    ## Optionally Creates a Vault Instance to Store build Secrets
-    # - name: Vault
-    #   ansible.builtin.include_role:
-    #     name: vault
-    #   when: services.vault.enabled is defined and services.vault.enabled is true
+    # Certified Community Supported
+    # No RedHat Option
+    # Optionally Creates a Vault Instance to Store build Secrets
+    - name: Vault
+      ansible.builtin.include_role:
+        name: vault
+      when: openshift.services.vault.enabled is defined and openshift.services.vault.enabled is true
 
     ## Certified GitLab Supported
     ## No RedHat Options

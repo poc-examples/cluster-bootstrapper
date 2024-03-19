@@ -14,8 +14,6 @@
       metadata:
         name: "external-secrets-plugin"
         namespace: "{{ gitops.namespace }}"
-        annotations:
-          argocd.argoproj.io/sync-wave: "-1"
       spec:
         destination:
           namespace: "{{ openshift.services.external_secrets.namespace }}"
@@ -37,6 +35,8 @@
               argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
           syncOptions:
             - CreateNamespace=true
+            - Validate=false
+            - SkipDryRunOnMissingResource=true
 
 ## VERIFY EXTERNAL SECRETS IS RUNNING BEFORE CONTINUING
 - name: External Secrets - Wait Webhook is Running

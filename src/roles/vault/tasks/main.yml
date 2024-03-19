@@ -1,17 +1,5 @@
 ---
 
-- name: Ensure External Secrets Namespace
-  community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    state: "{{ state }}"
-    definition:
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: vault-server
-
 - name: Vault - Create Server
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
@@ -22,33 +10,44 @@
       apiVersion: argoproj.io/v1alpha1
       kind: Application
       metadata:
-        name: "vault-manager"
+        name: "vault-plugin"
         namespace: "{{ gitops.namespace }}"
       spec:
         destination:
-          namespace: "vault-manager"
+          namespace: vault-server
           server: 'https://kubernetes.default.svc'
         source:
-          repoURL: "https://github.com/poc-examples/managing-secrets"
-          path: "vault/app"
-          version: v3
+          repoURL: 'https://github.com/poc-examples/managing-secrets'
+          path: 'vault/config'
           targetRevision: HEAD
         project: default
         syncPolicy:
-          managedNamespaceMetadata:
-            labels:
-              argocd.argoproj.io/managed-by: "{{ gitops.namespace }}"
-          syncOptions:
-            - CreateNamespace=false
           automated:
             prune: true
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
+            selfHeal: true
+          managedNamespaceMetadata:
+            labels:
+              argocd.argoproj.io/managed-by: argocd
+          syncOptions:
+            - CreateNamespace=true
+
+## BOOTSTRAPS VAULT WITH SECRETS
+- name: Vault - Wait Namespace Exists
+  community.kubernetes.k8s_info:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    kind: Namespace
+    name: "vault-server"
+  register: namespace_info
+  until: namespace_info.resources | length > 0
+  retries: 20
+  delay: 15
 
 - name: Vault - Generate Secrets for Vault
   template:
     src: "secrets.yaml.j2"
     dest: "manifests/vault/secrets.yaml"
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Create Priming Secrets
   community.okd.k8s:
@@ -57,7 +56,6 @@
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     src: "manifests/vault/secrets.yaml"
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Create Vault Credentials
   community.okd.k8s:
@@ -73,7 +71,6 @@
         namespace: "vault-server"
       data:
         token: "cm9vdA=="
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Create Admin Vault Credentials
   community.okd.k8s:
@@ -86,10 +83,9 @@
       kind: Secret
       metadata:
         name: vault-token
-        namespace: "{{ external_secrets.namespace }}"
+        namespace: "{{ openshift.services.external_secrets.namespace }}"
       data:
         token: "cm9vdA=="
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Create Vault Credentials
   community.okd.k8s:
@@ -113,7 +109,6 @@
               tokenSecretRef:
                 name: "vault-token"
                 key: "token"
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Create Cluster Admin Vault Credentials
   community.okd.k8s:
@@ -126,11 +121,11 @@
       kind: ClusterSecretStore
       metadata:
         name: eso-admin-secret-store
-        namespace: "{{ external_secrets.namespace }}"
+        namespace: "{{ openshift.services.external_secrets.namespace }}"
       spec:
         conditions:
           - namespaces:
-            - "{{ external_secrets.namespace }}"
+            - "{{ openshift.services.external_secrets.namespace }}"
             - "cluster-secrets-admin"
             - "gitlab-system"
             - "pipelines"
@@ -142,15 +137,13 @@
             auth:
               tokenSecretRef:
                 name: "vault-token"
-                namespace: "{{ external_secrets.namespace }}"
+                namespace: "{{ openshift.services.external_secrets.namespace }}"
                 key: "token"
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Generate Push Secrets
   template:
     src: "push-secrets.yaml.j2"
     dest: "manifests/vault/push-secrets.yaml"
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
 
 - name: Vault - Priming Secrets
   community.okd.k8s:
@@ -159,4 +152,3 @@
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     src: "manifests/vault/push-secrets.yaml"
-  when: openshift.vault.enabled is defined and openshift.vault.enabled is true
