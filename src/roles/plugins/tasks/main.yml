@@ -32,4 +32,5 @@
           syncOptions:
             - CreateNamespace=false
   loop: "{{ gitops.plugins }}"
-  when: gitops.plugins is defined
+  when:
+    - gitops.plugins is defined

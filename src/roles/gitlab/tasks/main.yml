@@ -51,5 +51,5 @@
   until:
     - gitlab_webserver_status.resources | length > 0
     - gitlab_webserver_status.resources[0].status.readyReplicas | default(0) == gitlab_webserver_status.resources[0].status.replicas
-  retries: 20
+  retries: 40
   delay: 15
