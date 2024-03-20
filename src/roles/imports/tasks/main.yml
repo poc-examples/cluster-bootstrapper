@@ -133,4 +133,8 @@
         "name": "{{ item.name }}",
         "import_url": "{{ item.url }}"
         }
+  register: result
+  until: result.status != 403
+  retries: 5
+  delay: 10
   loop: "{{ imports }}"
