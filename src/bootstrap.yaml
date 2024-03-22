@@ -66,6 +66,13 @@
         name: gitlab
       when: openshift.services.gitlab.enabled is defined and openshift.services.gitlab.enabled is true
 
+    # RedHat Supported
+    # Optionally Creates a DevHub Instance and connects auth
+    - name: devhub
+      ansible.builtin.include_role:
+        name: devhub
+      when: openshift.services.devhub.enabled is defined and openshift.services.devhub.enabled is true
+
     # Accepts a defined list of repositories and Imports them into GitLab.
     - name: Import Repositories
       ansible.builtin.include_role:

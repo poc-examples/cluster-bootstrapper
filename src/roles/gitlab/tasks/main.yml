@@ -53,3 +53,32 @@
     - gitlab_webserver_status.resources[0].status.readyReplicas | default(0) == gitlab_webserver_status.resources[0].status.replicas
   retries: 40
   delay: 15
+
+
+- name: GitLab - Push GitLab Token
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: external-secrets.io/v1alpha1
+      kind: PushSecret
+      metadata:
+        name: "gitlab-system-secret-priming"
+        namespace: gitlab-system
+      spec:
+        deletionPolicy: Delete
+        refreshInterval: 10s
+        secretStoreRefs:
+          - name: eso-admin-secret-store
+            kind: ClusterSecretStore
+        selector:
+          secret:
+            name: "gitlab-gitlab-initial-root-password"
+        data:
+          - match:
+              secretKey: "password"
+              remoteRef:
+                remoteKey: "gitlab"
+                property: "token"
