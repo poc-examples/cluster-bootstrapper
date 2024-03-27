@@ -3,7 +3,7 @@
 - name: Setup Base Operators
   hosts: localhost
   connection: local
-  gather_facts: no
+  gather_facts: yes
   collections:
     - community.okd
     - community.kubernetes
@@ -66,13 +66,6 @@
         name: gitlab
       when: openshift.services.gitlab.enabled is defined and openshift.services.gitlab.enabled is true
 
-    # RedHat Supported
-    # Optionally Creates a DevHub Instance and connects auth
-    - name: devhub
-      ansible.builtin.include_role:
-        name: devhub
-      when: openshift.services.devhub.enabled is defined and openshift.services.devhub.enabled is true
-
     # Accepts a defined list of repositories and Imports them into GitLab.
     - name: Import Repositories
       ansible.builtin.include_role:
@@ -84,3 +77,10 @@
       ansible.builtin.include_role:
         name: plugins
       when: gitops.plugins is defined
+
+    # RedHat Supported
+    # Optionally Creates a DevHub Instance and connects auth
+    - name: devhub
+      ansible.builtin.include_role:
+        name: devhub
+      when: openshift.services.devhub.enabled is defined and openshift.services.devhub.enabled is true

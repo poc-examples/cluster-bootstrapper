@@ -80,6 +80,7 @@
         server:
           route:
             enabled: true
+          insecure: true
         kustomizeBuildOptions: '--enable-helm'
 
 - name: OpenShift GitOps - Ensure Image Updater

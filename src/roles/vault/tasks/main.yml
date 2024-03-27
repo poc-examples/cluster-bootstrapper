@@ -128,8 +128,9 @@
             - "{{ openshift.services.external_secrets.namespace }}"
             - "cluster-secrets-admin"
             - "gitlab-system"
-            - "pipelines"
+            - "openshift-pipelines"
             - "backstage"
+            - "openshift-gitops"
         provider:
           vault:
             server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"
@@ -153,3 +154,31 @@
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     src: "manifests/vault/push-secrets.yaml"
+
+- name: Vault - Push ARGOCD Token
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: external-secrets.io/v1alpha1
+      kind: PushSecret
+      metadata:
+        name: "argocd-secret-priming"
+        namespace: openshift-gitops
+      spec:
+        deletionPolicy: Delete
+        refreshInterval: 10s
+        secretStoreRefs:
+          - name: eso-admin-secret-store
+            kind: ClusterSecretStore
+        selector:
+          secret:
+            name: "openshift-gitops-cluster"
+        data:
+          - match:
+              secretKey: "admin.password"
+              remoteRef:
+                remoteKey: "argocd"
+                property: "ARGOCD_TOKEN"

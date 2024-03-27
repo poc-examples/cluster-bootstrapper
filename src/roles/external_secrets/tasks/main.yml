@@ -52,4 +52,4 @@
     - operator_status.resources | length > 0
     - operator_status.resources[0].status.readyReplicas | default(0) > 0
   retries: 20
-  delay: 15
+  delay: 25
