@@ -25,6 +25,7 @@ openshift:
       enabled: true
 
     devhub:
+      chartVersion: 0.1.7
       enabled: true
 
     external_secrets:
