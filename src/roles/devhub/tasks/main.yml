@@ -122,9 +122,9 @@
           #     host: "{{ openshift.domain }}"
         project: default
         syncPolicy:
-          # automated:
-          #   prune: true
-          #   selfHeal: true
+          automated:
+            prune: true
+            selfHeal: true
           managedNamespaceMetadata:
             labels:
               argocd.argoproj.io/managed-by: "{{ openshift.services.gitops.namespace }}"
