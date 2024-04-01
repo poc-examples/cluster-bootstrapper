@@ -11,7 +11,7 @@
       kind: Application
       metadata:
         name: "vault-plugin"
-        namespace: "{{ gitops.namespace }}"
+        namespace: "{{ openshift.services.gitops.namespace }}"
       spec:
         destination:
           namespace: vault-server
@@ -27,7 +27,7 @@
             selfHeal: true
           managedNamespaceMetadata:
             labels:
-              argocd.argoproj.io/managed-by: argocd
+              argocd.argoproj.io/managed-by: "{{ openshift.services.gitops.namespace }}"
           syncOptions:
             - CreateNamespace=true
 
@@ -126,11 +126,11 @@
         conditions:
           - namespaces:
             - "{{ openshift.services.external_secrets.namespace }}"
+            - "{{ openshift.services.gitops.namespace }}"
             - "cluster-secrets-admin"
             - "gitlab-system"
             - "openshift-pipelines"
             - "backstage"
-            - "openshift-gitops"
             - "backstage-template-test"
         provider:
           vault:
@@ -167,7 +167,7 @@
       kind: PushSecret
       metadata:
         name: "argocd-secret-priming"
-        namespace: openshift-gitops
+        namespace: "{{ openshift.services.gitops.namespace }}"
       spec:
         deletionPolicy: Delete
         refreshInterval: 10s
