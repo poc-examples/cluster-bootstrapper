@@ -19,10 +19,10 @@
           namespace: "{{ openshift.services.external_secrets.namespace }}"
           server: 'https://kubernetes.default.svc'
         source:
-          repoURL: "https://github.com/poc-examples/charts"
-          path: "external_secrets"
+          chart: external_secrets
+          repoURL: "https://poc-examples.github.io/charts"
           version: v3
-          targetRevision: HEAD
+          targetRevision: 0.1.7
           helm:
             valuesObject:  "{{ openshift.services.external_secrets.helmValues }}"
         project: default

@@ -1,5 +1,5 @@
 gitlab:
-  namespace: "{{ openshift.services.gitlab.helmValues.namespace }}"
+  namespace: "{{ openshift.services.gitlab.namespace }}"
   address: "https://gitlab.{{ openshift.services.gitlab.helmValues.domain }}"
 
 imports:

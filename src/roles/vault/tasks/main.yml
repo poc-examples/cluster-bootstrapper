@@ -131,6 +131,7 @@
             - "openshift-pipelines"
             - "backstage"
             - "openshift-gitops"
+            - "backstage-template-test"
         provider:
           vault:
             server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"

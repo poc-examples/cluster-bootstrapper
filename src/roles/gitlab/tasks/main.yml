@@ -16,13 +16,13 @@
         namespace: "{{ gitops.namespace }}"
       spec:
         destination:
-          namespace: "{{ openshift.services.gitlab.helmValues.namespace }}"
+          namespace: "{{ openshift.services.gitlab.namespace }}"
           server: 'https://kubernetes.default.svc'
         source:
-          repoURL: "https://github.com/poc-examples/charts"
-          path: "gitlab"
+          chart: gitlab
+          repoURL: "https://poc-examples.github.io/charts"
           version: v3
-          targetRevision: HEAD
+          targetRevision: 0.1.10
           helm:
             valuesObject:  "{{ openshift.services.gitlab.helmValues }}"
         project: default
