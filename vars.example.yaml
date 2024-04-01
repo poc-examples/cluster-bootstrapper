@@ -15,11 +15,22 @@ openshift:
   services:
 
     gitops:
+      namespace: openshift-operators
+      channel: gitops-1.11
+      enabled: true
+      updater:
+        enabled: true
+
+    tekton:
+      enabled: true
+
+    devhub:
       enabled: true
 
     external_secrets:
-      enabled: true 
+      enabled: true
       namespace: external-secrets
+      channel: stable
       helmValues:
         namespace: external-secrets
         gitops:
@@ -39,39 +50,32 @@ openshift:
 
     vault:
       enabled: true
+      pushsecrets:
+        - remoteKey: <VAULT_REMOTE_KEY> #demo
+          secrets:
+            - key: username
+              value: <USERNAME>
+            - key: password
+              value: "<PASSWORD>"
+            - key: server
+              value: "<SERVER>"
 
     gitlab:
+      namespace: gitlab-system
       enabled: true
       helmValues:
         namespace: gitlab-system
-        domain: apps.mcvga5r7.eastus.aroapp.io
+        domain: apps.<DOMAIN>
 
     registry:
       enabled: false
 
+# plugins:
 
-operators:
+#   - repo: poc-examples/pipelines
+#     name: pipelines-plugin
+#     path: patterns/tekton/app
 
-  gitops:
-    namespace: openshift-operators
-    channel: gitops-1.11
-
-  external_secrets:
-    namespace: openshift-operators
-    channel: stable
-
-secrets:
-
-  namespace: openshift-operators
-
-gitops:
-
-  updater:
-    enabled: true
-
-  namespace: openshift-gitops
-
-  # plugins: 
-  #   - repo: poc-examples/managing-secrets
-  #     name: vault-csi-provider
-  #     path: patterns/secrets-csi-driver/foundational/app/vault
+#   - repo: poc-examples/application-catalog
+#     name: website-app-plugin
+#     path: website/app
