@@ -60,7 +60,8 @@
         Authorization: Bearer {{ gitlab_access_token.json.access_token }}
     body: >
         {
-        "import_sources": ["git"]
+        "import_sources": ["git"],
+        "auto_devops_enabled": false
         }
 
 - name: GitLab - Import Project from GitHub
