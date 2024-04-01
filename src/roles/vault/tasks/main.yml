@@ -123,15 +123,13 @@
         name: eso-admin-secret-store
         namespace: "{{ openshift.services.external_secrets.namespace }}"
       spec:
-        conditions:
-          - namespaces:
-            - "{{ openshift.services.external_secrets.namespace }}"
-            - "{{ openshift.services.gitops.namespace }}"
-            - "cluster-secrets-admin"
-            - "gitlab-system"
-            - "openshift-pipelines"
-            - "backstage"
-            - "backstage-template-test"
+        conditions: []
+          # - namespaces:
+          #   - "{{ openshift.services.external_secrets.namespace }}"
+          #   - "{{ openshift.services.gitops.namespace }}"
+          #   - "cluster-secrets-admin"
+          #   - "gitlab-system"
+          #   - "backstage"
         provider:
           vault:
             server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"
