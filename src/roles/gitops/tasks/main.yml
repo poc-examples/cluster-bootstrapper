@@ -116,4 +116,4 @@
           syncOptions:
             - CreateNamespace=false
             # - ServerSideApply=true # Allows patching in the namespace
-  when: gitops.updater.enabled is defined and gitops.updater.enabled is true
+  when: openshift.services.gitops.updater.enabled is defined and openshift.services.gitops.updater.enabled is true

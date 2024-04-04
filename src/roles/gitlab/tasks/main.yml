@@ -22,7 +22,7 @@
           chart: gitlab
           repoURL: "https://poc-examples.github.io/charts"
           version: v3
-          targetRevision: 0.1.10
+          targetRevision: 0.1.18
           helm:
             valuesObject:  "{{ openshift.services.gitlab.helmValues }}"
         project: default
@@ -53,7 +53,6 @@
     - gitlab_webserver_status.resources[0].status.readyReplicas | default(0) == gitlab_webserver_status.resources[0].status.replicas
   retries: 40
   delay: 15
-
 
 - name: GitLab - Push GitLab Token
   community.okd.k8s:

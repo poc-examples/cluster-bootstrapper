@@ -1,9 +1,3 @@
 gitlab:
   namespace: "{{ openshift.services.gitlab.namespace }}"
   address: "https://gitlab.{{ openshift.services.gitlab.helmValues.domain }}"
-
-imports:
-  - name: "container library"
-    url: "https://github.com/poc-examples/container-library.git"
-  - name: "application catalog"
-    url: "https://github.com/poc-examples/application-catalog.git"

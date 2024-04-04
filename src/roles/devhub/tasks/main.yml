@@ -108,11 +108,11 @@
         namespace: "{{ openshift.services.gitops.namespace }}"
       spec:
         destination:
-          namespace: "openshift-pipelines"
+          namespace: "openshift-gitops"
           server: 'https://kubernetes.default.svc'
         source:
           repoURL: "https://gitlab.apps.{{ openshift.domain }}/self-provisioned/manifests"
-          path: "."
+          path: "applications"
           version: v3
           targetRevision: HEAD
           directory:

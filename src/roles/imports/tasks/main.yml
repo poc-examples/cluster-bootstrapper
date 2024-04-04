@@ -64,30 +64,25 @@
         "auto_devops_enabled": false
         }
 
-- name: GitLab - Import Project from GitHub
-  uri:
-    url: "{{ gitlab.address }}/api/v4/projects"
-    method: POST
-    validate_certs: no
-    body_format: json
-    status_code:
-        - 200
-        - 201
-        - 409
-        - 400
-    headers:
-        Content-Type: application/json
-        Authorization: Bearer {{ gitlab_access_token.json.access_token }}
-    body: >
-        {
-        "name": "{{ item.name }}",
-        "import_url": "{{ item.url }}"
-        }
-  register: result
-  until: result.status != 403
-  retries: 5
-  delay: 10
-  loop: "{{ imports }}"
+# - name: GitLab - Create Manifests Project
+#   uri:
+#     url: "{{ gitlab.address }}/api/v4/projects"
+#     method: POST
+#     validate_certs: no
+#     status_code:
+#         - 200
+#         - 201
+#         - 409
+#         - 400
+#     body_format: json
+#     headers:
+#         Content-Type: application/json
+#         Authorization: Bearer {{ gitlab_access_token.json.access_token }}
+#     body: >
+#         {
+#         "name": "manifests",
+#         "default_branch": "main"
+#         }
 
 - name: GitLab - Fetch Groups from GitLab
   uri:
@@ -241,6 +236,31 @@
         GITLAB_TOKEN: "{{ token | b64encode }}"
   when: 
     - tokenID is not defined
+
+- name: GitLab - Import Project from GitHub
+  uri:
+    url: "{{ gitlab.address }}/api/v4/projects"
+    method: POST
+    validate_certs: no
+    body_format: json
+    status_code:
+        - 200
+        - 201
+        - 409
+        - 400
+    headers:
+        Content-Type: application/json
+        Authorization: Bearer glpat-z19YRnAdQYntC1fook-x
+    body: >
+        {
+        "name": "manifests",
+        "namespace_id": "{{ groupID }}",
+        "import_url": "https://github.com/poc-examples/automanifests.git"
+        }
+  register: result
+  until: result.status != 403
+  retries: 5
+  delay: 10
 
 - name: Import GitLab - Push GitLab Token
   community.okd.k8s:
