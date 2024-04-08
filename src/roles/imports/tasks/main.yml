@@ -250,7 +250,7 @@
         - 400
     headers:
         Content-Type: application/json
-        Authorization: Bearer glpat-z19YRnAdQYntC1fook-x
+        Authorization: Bearer {{ gitlab_access_token.json.access_token }}
     body: >
         {
         "name": "manifests",

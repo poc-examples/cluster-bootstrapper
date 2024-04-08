@@ -22,7 +22,7 @@
           chart: gitlab
           repoURL: "https://poc-examples.github.io/charts"
           version: v3
-          targetRevision: 0.1.18
+          targetRevision: 0.1.19
           helm:
             valuesObject:  "{{ openshift.services.gitlab.helmValues }}"
         project: default
