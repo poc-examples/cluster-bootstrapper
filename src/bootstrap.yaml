@@ -16,12 +16,12 @@
 
   tasks:
 
-    # ## RedHat Supported
-    # ## Adds Machines to existing cluster
-    # - name: Machines
-    #   ansible.builtin.include_role:
-    #     name: machines
-    #   when: not idontwanttorun
+    ## RedHat Supported
+    ## Adds Machines to existing cluster
+    - name: Machines
+      ansible.builtin.include_role:
+        name: machines
+      # when: not idontwanttorun
 
     ## RedHat Supported
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
@@ -77,6 +77,13 @@
       ansible.builtin.include_role:
         name: plugins
       when: gitops.plugins is defined
+
+    # RedHat Supported
+    # Optionally Creates a ACS Instance
+    - name: acs
+      ansible.builtin.include_role:
+        name: acs
+      when: openshift.services.acs.enabled is defined and openshift.services.acs.enabled is true
 
     # RedHat Supported
     # Optionally Creates a DevHub Instance and connects auth
