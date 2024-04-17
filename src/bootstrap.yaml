@@ -57,6 +57,13 @@
         name: vault
       when: openshift.services.vault.enabled is defined and openshift.services.vault.enabled is true
 
+    # RedHat Supported
+    # Optionally Creates a Keycloak for sso
+    - name: Keycloak
+      ansible.builtin.include_role:
+        name: keycloak
+      when: openshift.services.keycloak.enabled is defined and openshift.services.keycloak.enabled is true
+
     # Certified GitLab Supported
     # No RedHat Options
     # Creates A GitLab Instance Open to External traffic at gitlab.<host>
@@ -84,6 +91,13 @@
       ansible.builtin.include_role:
         name: acs
       when: openshift.services.acs.enabled is defined and openshift.services.acs.enabled is true
+
+    # RedHat Supported
+    # Optionally Creates a Tekton and Signing Secrets
+    - name: tekton
+      ansible.builtin.include_role:
+        name: tekton
+      when: openshift.services.tekton.enabled is defined and openshift.services.tekton.enabled is true
 
     # RedHat Supported
     # Optionally Creates a DevHub Instance and connects auth

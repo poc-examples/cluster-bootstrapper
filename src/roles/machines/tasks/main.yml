@@ -40,11 +40,11 @@
     - openshift.services.acs.enabled is true
     - openshift.token is defined
 
-- debug:
-    msg: "{{ infra_details.json.status.platformStatus.type | lower }}"
+# - debug:
+#     msg: "{{ infra_details.json.status.platformStatus.type | lower }}"
 
-- debug:
-    msg: "{{ existing_machinesets.resources[0] }}"
+# - debug:
+#     msg: "{{ existing_machinesets.resources[0] }}"
 
 - name: ACS - If Azure Enable MachineSet
   community.okd.k8s:
