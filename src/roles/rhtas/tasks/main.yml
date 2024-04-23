@@ -1,0 +1,82 @@
+---
+
+- name: RHTAS - Ensure rhtas Namespace
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ openshift.services.rhtas.namespace }}"
+
+- name: CTLOG - Generate an ECDSA private key
+  community.crypto.openssl_privatekey:
+    path: ctlog_ec_private.pem
+    type: ECC
+    cipher: auto
+    curve: secp256r1
+    passphrase: "{{ openshift.cert_passphrase }}"
+
+- name: CTLOG - Extract the public key from the private key
+  community.crypto.openssl_publickey:
+    privatekey_path: ctlog_ec_private.pem
+    path: ctlog_ec_public.pem
+    privatekey_passphrase: "{{ openshift.cert_passphrase }}"
+
+- name: CTLOG - Create Initial Secret
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: ctlog-ctlog-keys
+        namespace: rhtas
+      data:
+        public: "{{ lookup('file', 'ctlog_ec_public.pem') | b64encode }}"
+        private: "{{ lookup('file', 'ctlog_ec_private.pem') | b64encode }}"
+        passphrase: "{{ 'cbe204224' | b64encode }}"
+
+## Install RHTAS for TSSC
+- name: RHTAS - Install Application
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: "rhtas-plugin"
+        namespace: "{{ openshift.services.gitops.namespace }}"
+      spec:
+        destination:
+          namespace: "rhtas"
+          server: 'https://kubernetes.default.svc'
+        source:
+          chart: rhtas
+          repoURL: "https://poc-examples.github.io/charts"
+          version: v3
+          targetRevision: "{{ openshift.services.rhtas.chartVersion }}"
+          helm:
+            valuesObject:
+              domain: "{{ openshift.domain }}"
+        project: default
+        syncPolicy:
+          automated:
+            prune: false
+            selfHeal: true
+          managedNamespaceMetadata:
+            labels:
+              argocd.argoproj.io/managed-by: "{{ openshift.services.gitops.namespace }}"
+          syncOptions:
+            - CreateNamespace=true
+            - Validate=false
+            - SkipDryRunOnMissingResource=true

@@ -22,6 +22,9 @@
           repoURL: "https://poc-examples.github.io/charts"
           version: v3
           targetRevision: "{{ openshift.services.keycloak.chartVersion }}"
+          helm:
+            valuesObject:
+              domain: "{{ openshift.domain }}"
         project: default
         syncPolicy:
           automated:

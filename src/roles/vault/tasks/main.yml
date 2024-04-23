@@ -17,9 +17,24 @@
           namespace: vault-server
           server: 'https://kubernetes.default.svc'
         source:
-          repoURL: 'https://github.com/poc-examples/managing-secrets'
-          path: 'vault/config'
-          targetRevision: HEAD
+          chart: vault
+          targetRevision: "{{ openshift.services.vault.chartVersion }}"
+          repoURL: 'https://helm.releases.hashicorp.com'
+          version: v3
+          helm:
+            valuesObject:
+              csi:
+                enabled: false
+              global:
+                openshift: true
+              injector:
+                enabled: false
+              server:
+                dev:
+                  enabled: true
+                enabled: true
+                # route:
+                #   enabled: true
         project: default
         syncPolicy:
           automated:
@@ -102,7 +117,7 @@
       spec:
         provider:
           vault:
-            server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"
+            server: "http://vault-plugin-internal.vault-server.svc.cluster.local:8200"
             path: "secret"
             version: "v2"
             auth:
@@ -132,7 +147,7 @@
           #   - "backstage"
         provider:
           vault:
-            server: "http://vault-server-internal.vault-server.svc.cluster.local:8200"
+            server: "http://vault-plugin-internal.vault-server.svc.cluster.local:8200"
             path: "secret"
             version: "v2"
             auth:
@@ -181,3 +196,41 @@
               remoteRef:
                 remoteKey: "argocd"
                 property: "ARGOCD_TOKEN"
+
+- name: Vault - Push CA Cert
+  community.okd.k8s:
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
+    validate_certs: "{{ openshift.validate_certs }}"
+    state: "{{ state }}"
+    definition:
+      apiVersion: external-secrets.io/v1alpha1
+      kind: PushSecret
+      metadata:
+        name: "ca-cert-push"
+        namespace: "openshift-operators"
+      spec:
+        deletionPolicy: Delete
+        refreshInterval: 10s
+        secretStoreRefs:
+          - name: eso-admin-secret-store
+            kind: ClusterSecretStore
+        selector:
+          secret:
+            name: "ca-key-pair"
+        data:
+          - match:
+              secretKey: "ca.key"
+              remoteRef:
+                remoteKey: "cert"
+                property: "ca.key"
+          - match:
+              secretKey: "ca.crt"
+              remoteRef:
+                remoteKey: "cert"
+                property: "ca.crt"
+          - match:
+              secretKey: "password"
+              remoteRef:
+                remoteKey: "cert"
+                property: "password"

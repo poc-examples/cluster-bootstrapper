@@ -1,35 +1,65 @@
 openshift:
 
   token: "<OPENSHIFT_TOKEN>"
+  domain: "<Placeholder_domain>"
   api_url: "<OPENSHIFT_API_URL>"
+
   validate_certs: false
-
-  # machines:
-
-  #   - # spot: true
-  #     gpu: true
-  #     replicas: 1
-  #     location: eastus
-  #     zone: "1"
+  cert_passphrase: <cert_passphrase>
 
   services:
 
+    registry:
+      enabled: false
+
+    acs:
+      chartVersion: 0.1.6
+      enabled: true
+
+    keycloak:
+      chartVersion: 0.1.34
+      enabled: true
+
     gitops:
-      namespace: openshift-operators
+      namespace: openshift-gitops
       channel: gitops-1.11
       enabled: true
       updater:
         enabled: true
 
     tekton:
+      chartVersion: 0.1.64
+      enabled: true
+
+    sonarqube:
+      chartVersion: ~8
       enabled: true
 
     devhub:
-      chartVersion: 0.1.7
+      chartVersion: 0.1.8
       enabled: true
+
+    rhtas:
+      chartVersion: 0.1.30
+      namespace: rhtas
+      enabled: true
+
+    gitlab:
+      namespace: gitlab-system
+      chartVersion: 0.1.23
+      enabled: true
+      # imports:
+      #   - name: "container library"
+      #     url: "https://github.com/poc-examples/container-library.git"
+      #   - name: "application catalog"
+      #     url: "https://github.com/poc-examples/application-catalog.git"
+      helmValues:
+        namespace: gitlab-system
+        domain: apps.placeholder.domain
 
     external_secrets:
       enabled: true
+      chartVersion: 0.1.23
       namespace: external-secrets
       channel: stable
       helmValues:
@@ -50,33 +80,43 @@ openshift:
           #   default_region: "us-east-2"
 
     vault:
+      chartVersion: 0.27.0
       enabled: true
+
       pushsecrets:
-        - remoteKey: <VAULT_REMOTE_KEY> #demo
+        - remoteKey: keycloak
           secrets:
             - key: username
-              value: <USERNAME>
+              value: keycloak
             - key: password
-              value: "<PASSWORD>"
+              value: "<pass>"
+            - key: database
+              value: "keycloak"
+        - remoteKey: demo
+          secrets:
+            - key: username
+              value: "<username>"
+            - key: password
+              value: "<password>"
             - key: server
-              value: "<SERVER>"
-
-    gitlab:
-      namespace: gitlab-system
-      enabled: true
-      helmValues:
-        namespace: gitlab-system
-        domain: apps.<DOMAIN>
-
-    registry:
-      enabled: false
-
-# plugins:
-
-#   - repo: poc-examples/pipelines
-#     name: pipelines-plugin
-#     path: patterns/tekton/app
-
-#   - repo: poc-examples/application-catalog
-#     name: website-app-plugin
-#     path: website/app
+              value: "quay.io"
+        - remoteKey: signing
+          secrets:
+            - key: cosign.pub
+              value: <Cosign Pub Key>
+            - key: cosign.key
+              value: <Cosign Private Key>
+            - key: cosign.password
+              value: <passphrase>
+        - remoteKey: rekor
+          secrets:
+            - key: pub
+              value: <rekor Pub Key>
+            - key: key
+              value: <rekor Private Key>
+        - remoteKey: repo
+          secrets:
+            - key: username
+              value: root
+            - key: url
+              value: https://gitlab.apps.placeholder.domain/self-provisioned/manifests.git

@@ -1,7 +1,7 @@
 ---
 
-## Install Tekton for pipelines
-- name: Tekton - Install Tekton
+## Install SonarQube
+- name: SonarQube - Install SonarQube
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -11,20 +11,27 @@
       apiVersion: argoproj.io/v1alpha1
       kind: Application
       metadata:
-        name: "tekton-plugin"
+        name: "sonarqube-plugin"
         namespace: "{{ openshift.services.gitops.namespace }}"
       spec:
         destination:
-          namespace: "openshift-operators"
+          namespace: "sonarqube"
           server: 'https://kubernetes.default.svc'
         source:
-          chart: tekton
-          repoURL: "https://poc-examples.github.io/charts"
+          chart: sonarqube
+          repoURL: "https://SonarSource.github.io/helm-chart-sonarqube"
           version: v3
-          targetRevision: "{{ openshift.services.tekton.chartVersion }}"
+          targetRevision: "{{ openshift.services.sonarqube.chartVersion }}"
           helm:
-            valuesObject:
-              domain: "{{ openshift.domain }}"
+            parameters:
+              - name: OpenShift.enabled
+                value: "true"
+              - name: serviceAccount.create
+                value: "true"
+              - name: postgresql.serviceAccount.enabled
+                value: "true"
+              - name: route.enabled
+                value: "true"
         project: default
         syncPolicy:
           automated:

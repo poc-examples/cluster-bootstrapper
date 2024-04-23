@@ -22,9 +22,9 @@
           chart: gitlab
           repoURL: "https://poc-examples.github.io/charts"
           version: v3
-          targetRevision: 0.1.20
+          targetRevision: "{{ openshift.services.gitlab.chartVersion }}"
           helm:
-            valuesObject:  "{{ openshift.services.gitlab.helmValues }}"
+            valuesObject: "{{ openshift.services.gitlab.helmValues }}"
         project: default
         syncPolicy:
           automated:
