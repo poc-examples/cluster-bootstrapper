@@ -53,6 +53,15 @@
         - openshift.services.external_secrets.enabled is true
 
     # RedHat Supported
+    # Creates Advanced Cluster Management Simplifying BootStrapper
+    - name: Advanced Cluster Management
+      ansible.builtin.include_role:
+        name: acm
+      when:
+        - openshift.services.acm.enabled is defined
+        - openshift.services.acm.enabled is true
+
+    # RedHat Supported
     # Would want to be Quay but should probably roll it out with docker registry
     # Currently Opens Traffic to Internal Image Registry 
     - name: Internal Registry
