@@ -1,3 +1,2 @@
 gitlab:
-  namespace: "{{ openshift.services.gitlab.namespace }}"
-  address: "https://gitlab.{{ openshift.services.gitlab.helmValues.domain }}"
+  address: "https://gitlab.apps.{{ openshift.domain }}"

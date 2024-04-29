@@ -25,7 +25,7 @@
     api_version: v1
     kind: Secret
     name: gitlab-gitlab-initial-root-password
-    namespace: "{{ gitlab.namespace }}"
+    namespace: "gitlab-system"
   register: gitlab_admin_secret
 
 - name: Decode the secret and register to a variable

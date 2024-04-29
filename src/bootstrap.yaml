@@ -40,9 +40,9 @@
     - name: Import Repositories
       ansible.builtin.include_role:
         name: imports
-      when:
-        - openshift.services.gitlab.enabled is defined
-        - openshift.services.gitlab.enabled is true
+      # when:
+      #   - openshift.services.gitlab.enabled is defined
+      #   - openshift.services.gitlab.enabled is true
 
     # RedHat Supported
     # Optionally Creates a Tekton and Signing Secrets
