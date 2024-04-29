@@ -17,20 +17,6 @@
   tasks:
 
     ## RedHat Supported
-    ## Adds Machines to existing cluster
-    - name: Machines
-      ansible.builtin.include_role:
-        name: machines
-      # when: not idontwanttorun
-
-    ## RedHat Supported
-    ## Adds Machines to existing cluster
-    - name: Certs
-      ansible.builtin.include_role:
-        name: certs
-      # when: not idontwanttorun
-
-    ## RedHat Supported
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
     ## Patches ArgoCD to use kustomize with helm plugin
     ## Optionally - Also installs Image-Updater
@@ -41,65 +27,14 @@
         - openshift.services.gitops.enabled is defined
         - openshift.services.gitops.enabled is true
 
-    ## Community Supported
-    ## No RedHat Option
-    ## Creates External Secrets Service
-    ## Optionally - Connects AWS Secrets Manager or Azure Key Vault w/ ClusterSecretStore
-    - name: External Secrets
+    ## RedHat Supported
+    ## Boots Initial Secrets
+    - name: Secrets
       ansible.builtin.include_role:
-        name: external_secrets
-      when:
-        - openshift.services.external_secrets.enabled is defined
-        - openshift.services.external_secrets.enabled is true
-
-    # RedHat Supported
-    # Creates Advanced Cluster Management Simplifying BootStrapper
-    - name: Advanced Cluster Management
-      ansible.builtin.include_role:
-        name: acm
-      when:
-        - openshift.services.acm.enabled is defined
-        - openshift.services.acm.enabled is true
-
-    # RedHat Supported
-    # Would want to be Quay but should probably roll it out with docker registry
-    # Currently Opens Traffic to Internal Image Registry 
-    - name: Internal Registry
-      ansible.builtin.include_role:
-        name: registry
-      when:
-        - openshift.services.registry.enabled is defined
-        - openshift.services.registry.enabled is true
-
-    # Certified Community Supported
-    # No RedHat Option
-    # Optionally Creates a Vault Instance to Store build Secrets
-    - name: Vault
-      ansible.builtin.include_role:
-        name: vault
-      when:
-        - openshift.services.vault.enabled is defined
-        - openshift.services.vault.enabled is true
-
-    # RedHat Supported
-    # Optionally Creates a Keycloak for sso
-    - name: Keycloak
-      ansible.builtin.include_role:
-        name: keycloak
-      when:
-        - openshift.services.keycloak.enabled is defined
-        - openshift.services.keycloak.enabled is true
-
-    # Certified GitLab Supported
-    # No RedHat Options
-    # Creates A GitLab Instance Open to External traffic at gitlab.<host>
-    # Saves GitLab Password to Vault
-    - name: GitLab
-      ansible.builtin.include_role:
-        name: gitlab
-      when:
-        - openshift.services.gitlab.enabled is defined
-        - openshift.services.gitlab.enabled is true
+        name: secrets
+      # when:
+      #   - openshift.services.gitops.enabled is defined
+      #   - openshift.services.gitops.enabled is true
 
     # Accepts a defined list of repositories and Imports them into GitLab.
     - name: Import Repositories
@@ -108,15 +43,6 @@
       when:
         - openshift.services.gitlab.enabled is defined
         - openshift.services.gitlab.enabled is true
-
-    # RedHat Supported
-    # Optionally Creates a ACS Instance
-    - name: acs
-      ansible.builtin.include_role:
-        name: acs
-      when:
-        - openshift.services.acs.enabled is defined
-        - openshift.services.acs.enabled is true
 
     # RedHat Supported
     # Optionally Creates a Tekton and Signing Secrets
@@ -135,15 +61,6 @@
       when:
         - openshift.services.rhtas.enabled is defined
         - openshift.services.rhtas.enabled is true
-
-    # RedHat Supported
-    # Optionally Creates a SonarQube Instance
-    - name: sonarqube
-      ansible.builtin.include_role:
-        name: sonarqube
-      when:
-        - openshift.services.sonarqube.enabled is defined
-        - openshift.services.sonarqube.enabled is true
 
     # RedHat Supported
     # Optionally Creates a DevHub Instance and connects auth

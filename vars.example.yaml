@@ -9,17 +9,6 @@ openshift:
 
   services:
 
-    registry:
-      enabled: false
-
-    acs:
-      chartVersion: 0.1.6
-      enabled: true
-
-    keycloak:
-      chartVersion: 0.1.34
-      enabled: true
-
     gitops:
       namespace: openshift-gitops
       channel: gitops-1.11
@@ -27,96 +16,67 @@ openshift:
       updater:
         enabled: true
 
+    boot:
+      enabled: true 
+      chartVersion: 0.1.19
+
+## WILL BE GONE
     tekton:
       chartVersion: 0.1.64
-      enabled: true
-
-    sonarqube:
-      chartVersion: ~8
-      enabled: true
+      enabled: false
 
     devhub:
       chartVersion: 0.1.8
-      enabled: true
+      enabled: false
 
     rhtas:
       chartVersion: 0.1.30
       namespace: rhtas
-      enabled: true
+      enabled: false
 
-    gitlab:
-      namespace: gitlab-system
-      chartVersion: 0.1.23
-      enabled: true
-      # imports:
-      #   - name: "container library"
-      #     url: "https://github.com/poc-examples/container-library.git"
-      #   - name: "application catalog"
-      #     url: "https://github.com/poc-examples/application-catalog.git"
-      helmValues:
-        namespace: gitlab-system
-        domain: apps.placeholder.domain
+## END WILL BE GONE
 
-    external_secrets:
-      enabled: true
-      chartVersion: 0.1.23
-      namespace: external-secrets
-      channel: stable
-      helmValues:
-        namespace: external-secrets
-        gitops:
-          namespace: openshift-gitops
-        subscription:
-          channel: stable
-        provider:
-          # azure:
-          #   client_id: "<client_id>"
-          #   client_secret: "<client_secret>"
-          #   tenant_id: "<tenant_id>"
-          #   vault_url: "https://<domain>.vault.azure.net"
-          # aws:
-          #   access_key_id: "<AWS_ACCESS_KEY_ID>"
-          #   secret_access_key: "<AWS_SECRET_ACCESS_KEY>"
-          #   default_region: "us-east-2"
+## SWAP TO GITEA MIRRORS OR UPGRADE GITLAB
+imports:
+  - name: "container library"
+    url: "https://github.com/poc-examples/container-library.git"
+  - name: "application catalog"
+    url: "https://github.com/poc-examples/application-catalog.git"
 
-    vault:
-      chartVersion: 0.27.0
-      enabled: true
-
-      pushsecrets:
-        - remoteKey: keycloak
-          secrets:
-            - key: username
-              value: keycloak
-            - key: password
-              value: "<pass>"
-            - key: database
-              value: "keycloak"
-        - remoteKey: demo
-          secrets:
-            - key: username
-              value: "<username>"
-            - key: password
-              value: "<password>"
-            - key: server
-              value: "quay.io"
-        - remoteKey: signing
-          secrets:
-            - key: cosign.pub
-              value: <Cosign Pub Key>
-            - key: cosign.key
-              value: <Cosign Private Key>
-            - key: cosign.password
-              value: <passphrase>
-        - remoteKey: rekor
-          secrets:
-            - key: pub
-              value: <rekor Pub Key>
-            - key: key
-              value: <rekor Private Key>
-        - remoteKey: repo
-          secrets:
-            - key: username
-              value: root
-            - key: url
-              value: https://gitlab.apps.placeholder.domain/self-provisioned/manifests.git
+pushsecrets:
+  - remoteKey: keycloak
+    secrets:
+      - key: username
+        value: keycloak
+      - key: password
+        value: "<pass>"
+      - key: database
+        value: "keycloak"
+  - remoteKey: demo
+    secrets:
+      - key: username
+        value: "<username>"
+      - key: password
+        value: "<password>"
+      - key: server
+        value: "quay.io"
+  - remoteKey: signing
+    secrets:
+      - key: cosign.pub
+        value: <Cosign Pub Key>
+      - key: cosign.key
+        value: <Cosign Private Key>
+      - key: cosign.password
+        value: <passphrase>
+  - remoteKey: rekor
+    secrets:
+      - key: pub
+        value: <rekor Pub Key>
+      - key: key
+        value: <rekor Private Key>
+  - remoteKey: repo
+    secrets:
+      - key: username
+        value: root
+      - key: url
+        value: https://gitlab.apps.placeholder.domain/self-provisioned/manifests.git

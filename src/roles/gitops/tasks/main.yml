@@ -83,7 +83,7 @@
           insecure: true
         kustomizeBuildOptions: '--enable-helm'
 
-- name: OpenShift GitOps - Ensure Image Updater
+- name: GitOps - Cold Boot ACM
   community.okd.k8s:
     host: "{{ openshift.api_url }}"
     api_key: "{{ openshift.token }}"
@@ -93,27 +93,66 @@
       apiVersion: argoproj.io/v1alpha1
       kind: Application
       metadata:
-        name: "image-updater-plugin"
+        name: "boot"
         namespace: "{{ openshift.services.gitops.namespace }}"
-        labels:
-          type: plugin
       spec:
         destination:
           namespace: "{{ openshift.services.gitops.namespace }}"
           server: 'https://kubernetes.default.svc'
         source:
-          repoURL: "https://github.com/poc-examples/continuous-delivery"
-          path: "image-updater"
+          chart: boot
+          repoURL: "https://poc-examples.github.io/charts"
           version: v3
-          targetRevision: HEAD
+          targetRevision: "{{ openshift.services.boot.chartVersion }}"
+          helm:
+            parameters:
+              - name: domain
+                value: "{{ openshift.domain }}"
         project: default
         syncPolicy:
           automated:
+            prune: false
             selfHeal: true
           managedNamespaceMetadata:
             labels:
               argocd.argoproj.io/managed-by: "{{ openshift.services.gitops.namespace }}"
           syncOptions:
             - CreateNamespace=false
-            # - ServerSideApply=true # Allows patching in the namespace
-  when: openshift.services.gitops.updater.enabled is defined and openshift.services.gitops.updater.enabled is true
+            - Validate=false
+            - SkipDryRunOnMissingResource=true
+
+# ## MOVE ME TO POLICIES
+# - name: OpenShift GitOps - Ensure Image Updater
+#   community.okd.k8s:
+#     host: "{{ openshift.api_url }}"
+#     api_key: "{{ openshift.token }}"
+#     validate_certs: "{{ openshift.validate_certs }}"
+#     state: "{{ state }}"
+#     definition:
+#       apiVersion: argoproj.io/v1alpha1
+#       kind: Application
+#       metadata:
+#         name: "image-updater-plugin"
+#         namespace: "{{ openshift.services.gitops.namespace }}"
+#         labels:
+#           type: plugin
+#       spec:
+#         destination:
+#           namespace: "{{ openshift.services.gitops.namespace }}"
+#           server: 'https://kubernetes.default.svc'
+#         source:
+#           repoURL: "https://github.com/poc-examples/continuous-delivery"
+#           path: "image-updater"
+#           version: v3
+#           targetRevision: HEAD
+#         project: default
+#         syncPolicy:
+#           automated:
+#             selfHeal: true
+#           managedNamespaceMetadata:
+#             labels:
+#               argocd.argoproj.io/managed-by: "{{ openshift.services.gitops.namespace }}"
+#           syncOptions:
+#             - CreateNamespace=false
+#             # - ServerSideApply=true # Allows patching in the namespace
+#   when: openshift.services.gitops.updater.enabled is defined and openshift.services.gitops.updater.enabled is true
