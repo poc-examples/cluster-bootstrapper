@@ -43,30 +43,3 @@
       # when:
       #   - openshift.services.gitlab.enabled is defined
       #   - openshift.services.gitlab.enabled is true
-
-    # RedHat Supported
-    # Optionally Creates a Tekton and Signing Secrets
-    - name: tekton
-      ansible.builtin.include_role:
-        name: tekton
-      when:
-        - openshift.services.tekton.enabled is defined
-        - openshift.services.tekton.enabled is true
-
-    # RedHat Supported
-    # Optionally Creates a DevHub Instance and connects auth
-    - name: rhtas
-      ansible.builtin.include_role:
-        name: rhtas
-      when:
-        - openshift.services.rhtas.enabled is defined
-        - openshift.services.rhtas.enabled is true
-
-    # RedHat Supported
-    # Optionally Creates a DevHub Instance and connects auth
-    - name: devhub
-      ansible.builtin.include_role:
-        name: devhub
-      when:
-        - openshift.services.devhub.enabled is defined
-        - openshift.services.devhub.enabled is true
