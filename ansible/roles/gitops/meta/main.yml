@@ -1,6 +1,6 @@
 galaxy_info:
   author: Christopher Engleby
-  description: Manages Openshift GitOps
+  description: Initially BootStraps Openshift GitOps
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
