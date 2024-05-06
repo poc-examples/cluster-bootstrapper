@@ -32,10 +32,6 @@
   set_fact:
     decoded_secret: "{{ gitlab_admin_secret.resources[0].data.password | b64decode }}"
 
-- debug:
-    msg: "{{ decoded_secret }}"
-
-# Obtain Access Token
 - name: Clone - Obtain Access Token
   uri:
     url: "{{ gitlab.address }}/oauth/token"
@@ -52,9 +48,6 @@
         "password": "{{ decoded_secret }}"
         }
   register: gitlab_access_token
-
-- debug:
-    msg: "{{ gitlab_access_token.json.access_token }}"
 
 - name: Decode the secret and register to a variable
   set_fact:
@@ -159,9 +152,6 @@
     - result.json is defined
     - result.json.id is defined
 
-- debug:
-    msg: "{{ groupID }}"
-
 - name: GitLab - Fetch Access Token from GitLab for Group
   uri:
     url: "{{ gitlab.address }}/api/v4/groups/{{ groupID }}/access_tokens"
@@ -187,11 +177,6 @@
     - tokens.json is defined
     - tokens.json | length > 0
     - tokens.json[0].id is defined
-
-- debug:
-    msg: "{{ tokenID }}"
-  when: 
-    - tokenID is defined
 
 - name: GitLab - Create Group Access Token
   uri:
