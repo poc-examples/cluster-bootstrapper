@@ -53,6 +53,10 @@
   set_fact:
     gitlab_token: "{{ gitlab_access_token.json.access_token }}"
 
+- name: GIT LAB ACCESS TOKEN
+  debug:
+    msg: "{{ gitlab_token }}"
+
 - name: GitLab - Enabled Import Via URL
   uri:
     url: "{{ gitlab.address }}/api/v4/application/settings"
@@ -140,8 +144,8 @@
         }
   register: result
   until: result.status != 403
-  retries: 5
-  delay: 10
+  retries: 10
+  delay: 20
   when: 
     - groupID is not defined
 
@@ -211,8 +215,8 @@
         }
   register: result
   until: result.status != 403
-  retries: 5
-  delay: 10
+  retries: 10
+  delay: 20
   when: tokenID is not defined
 
 - name: GitLab - Set Access Token Variable

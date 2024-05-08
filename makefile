@@ -24,3 +24,6 @@ configure:
 
 deploy: build configure
 	@echo "Set this to provide cluster information"
+
+destroy:
+	@echo "Destroy"

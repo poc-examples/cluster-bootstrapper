@@ -1,2 +1,2 @@
 gitlab:
-  address: "https://gitlab.apps.{{ openshift.domain }}"
+  address: "https://gitlab.apps.{{ domain }}"

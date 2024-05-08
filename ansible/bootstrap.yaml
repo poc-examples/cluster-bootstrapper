@@ -27,9 +27,9 @@
       ansible.builtin.set_fact:
         terraform_outputs: "{{ tf_outputs.stdout | from_json }}"
 
-    - name: Print Terraform Outputs
-      ansible.builtin.debug:
-        msg: "{{ terraform_outputs }}"
+    # - name: Print Terraform Outputs
+    #   ansible.builtin.debug:
+    #     msg: "{{ terraform_outputs }}"
 
     - name: Login to OpenShift
       ansible.builtin.shell:
