@@ -27,7 +27,7 @@ openshift:
     boot:
       enabled: true
       irsa: false
-      chartVersion: 0.1.30
+      chartVersion: 0.1.31
       helmValues:
         external_secrets:
           enabled: false
