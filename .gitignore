@@ -1,5 +1,5 @@
 vars.yaml
-*/manifests/*
+*/manifests/*.yaml
 *.pem
 .terraform*
 *.tfstate
