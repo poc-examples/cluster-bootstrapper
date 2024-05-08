@@ -115,7 +115,11 @@
   retries: 5
   delay: 10
 
-- name: GitLab - Decode the secret and register to a variable
+- name: GIT LAB Groups
+  debug:
+    msg: "{{ result }}"
+
+- name: GitLab - Set Group ID
   set_fact:
     groupID: "{{ result.json[0].id }}"
   when: 
@@ -219,11 +223,15 @@
   delay: 20
   when: tokenID is not defined
 
-- name: GitLab - Set Access Token Variable
+- name: GitLab - Set Group Access Token Variable
   set_fact:
-    token: "{{ result.json.token }}"
+    gitlabToken: "{{ result.json.token }}"
   when: 
     - tokenID is not defined
+
+- name: GitLab - Group Access Token
+  debug:
+    msg: "{{ gitlabToken }}"
 
 - name: Import GitLab - Create Backstage Group Token Access Credentials
   community.okd.k8s:
@@ -238,7 +246,7 @@
         name: gitlab-group-access-pat
         namespace: "gitlab-system"
       data:
-        GITLAB_TOKEN: "{{ token | b64encode }}"
+        GITLAB_TOKEN: "{{ gitlabToken | b64encode }}"
   when: 
     - tokenID is not defined
 
