@@ -1,11 +1,19 @@
+# domain: rosa-564muo.i286.p1.openshiftapps.com
+# api_url: "https://api.rosa-564muo.i286.p1.openshiftapps.com:6443"
+
 openshift:
 
-  token: "<OPENSHIFT_TOKEN>"
-  domain: "<Placeholder_domain>"
-  api_url: "<OPENSHIFT_API_URL>"
+  cloud: Amazon # Amazon or Azure
+
+  admin_credentials:
+    name: "username"
+    password: "password"
+
+  # https://console.redhat.com/openshift/token/show
+  offline_token: rosa_token
 
   validate_certs: false
-  cert_passphrase: <cert_passphrase>
+  cert_passphrase: "password"
 
   services:
 
@@ -17,24 +25,12 @@ openshift:
         enabled: true
 
     boot:
-      enabled: true 
-      chartVersion: 0.1.19
-
-## WILL BE GONE
-    tekton:
-      chartVersion: 0.1.64
-      enabled: false
-
-    devhub:
-      chartVersion: 0.1.8
-      enabled: false
-
-    rhtas:
-      chartVersion: 0.1.30
-      namespace: rhtas
-      enabled: false
-
-## END WILL BE GONE
+      enabled: true
+      irsa: false
+      chartVersion: 0.1.29
+      helmValues:
+        external_secrets:
+          enabled: false
 
 ## SWAP TO GITEA MIRRORS OR UPGRADE GITLAB
 imports:
