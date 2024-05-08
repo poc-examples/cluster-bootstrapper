@@ -3,8 +3,8 @@
 ## VERIFY EXTERNAL SECRETS IS RUNNING BEFORE CONTINUING
 - name: GitLab - Wait Webserver Exists
   community.kubernetes.k8s_info:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
+    host: "{{ api_url }}"
+    api_key: "{{ token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     kind: Deployment
     name: "gitlab-webservice-default"  # Replace with your actual deployment name
@@ -19,8 +19,8 @@
 ## FETCH THE PASSWORD
 - name: Clone - Decode Admin Password
   community.kubernetes.k8s_info:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
+    host: "{{ api_url }}"
+    api_key: "{{ token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     api_version: v1
     kind: Secret
@@ -223,8 +223,8 @@
 
 - name: Import GitLab - Create Backstage Group Token Access Credentials
   community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
+    host: "{{ api_url }}"
+    api_key: "{{ token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
@@ -265,8 +265,8 @@
 
 - name: Import GitLab - Push GitLab Token
   community.okd.k8s:
-    host: "{{ openshift.api_url }}"
-    api_key: "{{ openshift.token }}"
+    host: "{{ api_url }}"
+    api_key: "{{ token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:

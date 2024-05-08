@@ -1,50 +1,5 @@
-# Copyright (c) 2023 Red Hat, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 4.20.0"
-    }
-    rhcs = {
-      version = ">= 1.5.0"
-      source  = "terraform-redhat/rhcs"
-    }
-  }
-}
-
-# Export token using the RHCS_TOKEN environment variable
-provider "rhcs" {
-  token = var.ocm_token
-  url   = var.url
-}
-
-provider "aws" {
-  region = var.aws_region
-  ignore_tags {
-    key_prefixes = ["kubernetes.io/"]
-  }
-}
-
 data "aws_availability_zones" "available" {}
-
-locals {
-  # Extract availability zone names for the specified region, limit it to 1
-  region_azs = slice([for zone in data.aws_availability_zones.available.names : format("%s", zone)], 0, 1)
-}
+data "aws_caller_identity" "current" {}
 
 resource "random_string" "random_name" {
   length           = 6
@@ -54,6 +9,7 @@ resource "random_string" "random_name" {
 
 locals {
   path = coalesce(var.path, "/")
+  region_azs = slice([for zone in data.aws_availability_zones.available.names : format("%s", zone)], 0, 1)
   sts_roles = {
     role_arn         = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role${local.path}${local.cluster_name}-Installer-Role",
     support_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role${local.path}${local.cluster_name}-Support-Role",
@@ -65,11 +21,7 @@ locals {
     oidc_config_id       = rhcs_rosa_oidc_config.oidc_config.id
   }
   worker_node_replicas = coalesce(var.worker_node_replicas, 2)
-  # If cluster_name is not null, use that, otherwise generate a random cluster name
   cluster_name = coalesce(var.cluster_name, "rosa-${random_string.random_name.result}")
-}
-
-data "aws_caller_identity" "current" {
 }
 
 resource "rhcs_cluster_rosa_classic" "rosa_sts_cluster" {
@@ -77,6 +29,7 @@ resource "rhcs_cluster_rosa_classic" "rosa_sts_cluster" {
   cloud_region         = var.aws_region
   multi_az             = false
   aws_account_id       = data.aws_caller_identity.current.account_id
+  admin_credentials    = local.config.openshift.admin_credentials
   availability_zones   = ["us-east-1a"]
   tags                 = var.additional_tags
   version              = var.rosa_openshift_version
@@ -101,6 +54,55 @@ resource "rhcs_cluster_rosa_classic" "rosa_sts_cluster" {
 
 resource "rhcs_cluster_wait" "wait_for_cluster_build" {
   cluster = rhcs_cluster_rosa_classic.rosa_sts_cluster.id
-  # timeout in minutes
-  timeout = 60
+  timeout = 60 # minutes
+}
+
+output "api_url" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.api_url
+  description = "URL of the API server."
+}
+
+output "ccs_enabled" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.ccs_enabled
+  description = "Enables customer cloud subscription (Immutable with ROSA)"
+}
+
+output "console_url" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.console_url
+  description = "URL of the console."
+}
+
+output "current_version" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.current_version
+  description = "The currently running version of OpenShift on the cluster."
+}
+
+output "domain" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.domain
+  description = "DNS domain of cluster."
+}
+
+output "external_id" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.external_id
+  description = "Unique external identifier of the cluster."
+}
+
+output "id" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.id
+  description = "Unique identifier of the cluster."
+}
+
+output "infra_id" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.infra_id
+  description = "The ROSA cluster infrastructure ID."
+}
+
+output "ocm_properties" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.properties
+  description = "Merged properties defined by OCM and the user-defined 'properties'."
+}
+
+output "state" {
+  value       = rhcs_cluster_rosa_classic.rosa_sts_cluster.state
+  description = "State of the cluster."
 }

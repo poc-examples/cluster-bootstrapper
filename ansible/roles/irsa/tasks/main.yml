@@ -2,8 +2,8 @@
 
 - name: OpenShift GitOps - Ensure GitOps Namespace
   community.okd.k8s:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
@@ -14,8 +14,8 @@
 
 - name: OpenShift GitOps - Ensure GitOps Subscription
   community.okd.k8s:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
@@ -33,8 +33,8 @@
 
 - name: OpenShift GitOps - Ensure Admin RBAC
   community.okd.k8s:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
@@ -53,8 +53,8 @@
 
 - name: OpenShift GitOps - Wait for CRD Exists
   community.kubernetes.k8s_info:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     api_version: apiextensions.k8s.io/v1
     kind: CustomResourceDefinition
@@ -66,8 +66,8 @@
 
 - name: OpenShift GitOps - Enable Kustomization Helm Patch
   community.okd.k8s:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
@@ -85,8 +85,8 @@
 
 - name: GitOps - Cold Boot ACM
   community.okd.k8s:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
+    host: "{{ openshift.api_url }}"
+    api_key: "{{ openshift.token }}"
     validate_certs: "{{ openshift.validate_certs }}"
     state: "{{ state }}"
     definition:
@@ -107,7 +107,7 @@
           helm:
             parameters:
               - name: domain
-                value: "{{ domain }}"
+                value: "{{ openshift.domain }}"
         project: default
         syncPolicy:
           automated:

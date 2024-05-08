@@ -72,14 +72,12 @@ variable "autoscaling_enabled" {
   default     = "false"
 }
 
-#VPC Info
 variable "vpc_cidr_block" {
   type        = string
   description = "The value of the IP address block for machines or cluster nodes for the VPC."
   default     = "10.0.0.0/16"
 }
 
-#AWS Info
 variable "aws_region" {
   type    = string
   default = "us-east-1"
@@ -88,10 +86,6 @@ variable "aws_region" {
 variable "ocm_environment" {
   type    = string
   default = "production"
-}
-
-variable "ocm_token" {
-  type = string
 }
 
 variable "url" {

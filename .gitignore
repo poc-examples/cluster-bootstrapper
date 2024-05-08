@@ -1,3 +1,6 @@
 vars.yaml
 */manifests/*
 *.pem
+.terraform*
+*.tfstate
+terraform.tfplan
