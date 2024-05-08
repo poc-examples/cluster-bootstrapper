@@ -37,7 +37,7 @@
           oc login https://api.{{ terraform_outputs.domain.value }}:6443 \
             --username={{ openshift.admin_credentials.name }} \
             --password={{ openshift.admin_credentials.password }} \
-            --insecure-skip-tls-verify={{ openshift.validate_certs }}
+            --insecure-skip-tls-verify=True
       register: login_output
       failed_when: "'Login successful' not in login_output.stdout"
 
