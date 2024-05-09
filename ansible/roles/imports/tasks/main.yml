@@ -1,20 +1,26 @@
 ---
 
 ## VERIFY EXTERNAL SECRETS IS RUNNING BEFORE CONTINUING
-- name: GitLab - Wait Webserver Exists
-  community.kubernetes.k8s_info:
-    host: "{{ api_url }}"
-    api_key: "{{ token }}"
-    validate_certs: "{{ openshift.validate_certs }}"
-    kind: Deployment
-    name: "gitlab-webservice-default"  # Replace with your actual deployment name
-    namespace: "gitlab-system"  # Replace with the actual namespace
-  register: gitlab_webserver_status
-  until:
-    - gitlab_webserver_status.resources | length > 0
-    - gitlab_webserver_status.resources[0].status.readyReplicas | default(0) == gitlab_webserver_status.resources[0].status.replicas
-  retries: 80
-  delay: 15
+- name: Verify External Secrets is running before continuing
+  block:
+    - name: Display Initial Status Message
+      debug:
+        msg: "Starting verification of the GitLab Webserver deployment in the gitlab-system namespace."
+
+    - name: Check GitLab Webserver Deployment Status
+      community.kubernetes.k8s_info:
+        host: "{{ api_url }}"
+        api_key: "{{ token }}"
+        validate_certs: "{{ openshift.validate_certs }}"
+        kind: Deployment
+        name: "gitlab-webservice-default"  # Replace with your actual deployment name
+        namespace: "gitlab-system"  # Replace with the actual namespace
+      register: gitlab_webserver_status
+      until:
+        - gitlab_webserver_status.resources | length > 0
+        - gitlab_webserver_status.resources[0].status.readyReplicas | default(0) == gitlab_webserver_status.resources[0].status.replicas
+      retries: 80
+      delay: 15
 
 ## FETCH THE PASSWORD
 - name: Clone - Decode Admin Password
@@ -232,6 +238,8 @@
 - name: GitLab - Group Access Token
   debug:
     msg: "{{ gitlabToken }}"
+  when: 
+    - tokenID is not defined
 
 - name: Import GitLab - Create Backstage Group Token Access Credentials
   community.okd.k8s:
