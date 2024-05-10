@@ -18,6 +18,10 @@ build: check-shell
 	@terraform -chdir=terraform plan -out=terraform.tfplan
 	@terraform -chdir=terraform apply terraform.tfplan
 
+plan: check-shell
+	@terraform -chdir=terraform init
+	@terraform -chdir=terraform plan
+
 configure:
 	@ansible-playbook ansible/bootstrap.yaml
 	@echo configure
