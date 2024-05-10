@@ -1,3 +1,11 @@
+# Quickstart Guide
+
+0. Be sure to have the following cli tools installed: `oc`, `ansible`, `aws`, `rosa`, `terraform`, `python`, and the following ansible collections installed: `community.kubernetes`, `community.okd`
+1. Duplicate `vars.example.yaml` as `vars.yaml`. This is used to define the cluster configuration
+2. Update the new `vars.yaml` file with credentials on line 10.  Note that the username for the admin user will *always* be `cluster-admin`. Line 9 is redundant and will be removed in future iterations
+3. Update line 13 of `vars.yaml` with a rosa token ([can be found here](https://console.redhat.com/openshift/token/rosa)).
+4. Optionally update the secret values in the `pushsecrets` block after line 42, if using keycloak, or an external image registry
+5. Run `make build` to provision AND configure a new cluster.  This process will take several hours to complete.  (Run `make plan` to initialize terraform without provisioning any infrastructure)
 # Bootstrapping Openshift - GitOps & External Secrets Management
 
 - Presentation: [Slide Deck](https://docs.google.com/presentation/d/1NAMgU_SqTCjSY3XRqQJFdizHI6EJbvp6Cvk6zzDKinc/view)
