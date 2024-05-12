@@ -30,4 +30,5 @@ deploy: build configure
 	@echo "Set this to provide cluster information"
 
 destroy:
+	@terraform -chdir=terraform destroy
 	@echo "Destroy"

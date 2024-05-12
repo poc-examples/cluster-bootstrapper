@@ -35,11 +35,14 @@
       ansible.builtin.shell:
         cmd: >
           oc login https://api.{{ terraform_outputs.domain.value }}:6443 \
-            --username={{ openshift.admin_credentials.name }} \
+            --username={{ openshift.admin_credentials.username }} \
             --password={{ openshift.admin_credentials.password }} \
-            --insecure-skip-tls-verify=true || true
+            --insecure-skip-tls-verify=true
       register: login_output
-      failed_when: "'Login successful' not in login_output.stdout"
+      until: "'Login successful' in login_output.stdout"
+      retries: 10
+      delay: 30
+      ignore_errors: yes
 
     - name: Get the user token
       ansible.builtin.shell:
