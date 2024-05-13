@@ -62,17 +62,6 @@
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
     ## Patches ArgoCD to use kustomize with helm plugin
     ## Optionally - Also installs Image-Updater
-    - name: IRSA
-      ansible.builtin.include_role:
-        name: irsa
-      when:
-        - openshift.services.boot.irsa is defined
-        - openshift.services.boot.irsa is true
-
-    ## RedHat Supported
-    ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
-    ## Patches ArgoCD to use kustomize with helm plugin
-    ## Optionally - Also installs Image-Updater
     - name: GitOps
       vars:
         domain: "{{ terraform_outputs.domain.value }}"
@@ -94,14 +83,3 @@
       # when:
       #   - openshift.services.gitops.enabled is defined
       #   - openshift.services.gitops.enabled is true
-
-    # Accepts a defined list of repositories and Imports them into GitLab.
-    - name: Import Repositories
-      vars:
-        domain: "{{ terraform_outputs.domain.value }}"
-        api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
-      ansible.builtin.include_role:
-        name: imports
-      # when:
-      #   - openshift.services.gitlab.enabled is defined
-      #   - openshift.services.gitlab.enabled is true

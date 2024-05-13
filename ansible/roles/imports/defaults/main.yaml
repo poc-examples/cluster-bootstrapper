@@ -1,2 +1,0 @@
-gitlab:
-  address: "https://gitlab.apps.{{ domain }}"
