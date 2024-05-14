@@ -94,9 +94,29 @@
                 end
                 return hs
         controller:
-          sharding:
-            enabled: true
-            replicas: 3
+          # Less resource requirements on controller
+          diff:
+            server:
+              side: "true"
+          app:
+            state:
+              cache:
+                expiration: "2m0s"
+          repo:
+            server:
+              timeout:
+                seconds: "180"
+          status:
+            processors: "60"
+          operation:
+            processors: "30"
+          # Infinite Retries
+          k8sclient:
+            retry:
+              max: "-1"
+          kubectl:
+            parallelism:
+              limit: "30"
         server:
           route:
             enabled: true
