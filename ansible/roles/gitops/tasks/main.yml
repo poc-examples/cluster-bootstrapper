@@ -148,6 +148,7 @@
             parameters:
               - name: domain
                 value: "{{ domain }}"
+            valuesObject: "{{ openshift.services.boot.helmValues }}"
         project: default
         timeout: 120
         syncPolicy:
