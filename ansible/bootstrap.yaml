@@ -76,6 +76,6 @@
         api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
       ansible.builtin.include_role:
         name: secrets
-      # when:
-      #   - openshift.services.gitops.enabled is defined
-      #   - openshift.services.gitops.enabled is true
+      when:
+        - openshift.services.boot.enabled is defined
+        - openshift.services.boot.enabled is true

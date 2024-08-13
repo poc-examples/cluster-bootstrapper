@@ -60,7 +60,9 @@
     kind: CustomResourceDefinition
     name: "argocds.argoproj.io"
   register: argocd_crd
-  until: argocd_crd.resources | length > 0
+  until:
+    - argocd_crd.resources is defined
+    - argocd_crd.resources | length > 0
   retries: 40
   delay: 30
 
@@ -167,3 +169,6 @@
           syncOptions:
             - CreateNamespace=false
             - Validate=false
+  when:
+    - openshift.services.boot.enabled is defined
+    - openshift.services.boot.enabled is true
