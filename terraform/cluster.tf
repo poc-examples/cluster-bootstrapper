@@ -30,7 +30,7 @@ resource "rhcs_cluster_rosa_classic" "rosa_sts_cluster" {
   multi_az             = false
   aws_account_id       = data.aws_caller_identity.current.account_id
   admin_credentials    = local.config.openshift.admin_credentials
-  availability_zones   = ["${local.config.openshift.region}a","${local.config.openshift.region}b", "${local.config.openshift.region}c"]
+  availability_zones   = ["${local.config.openshift.region}b"]
   tags                 = var.additional_tags
   version              = var.rosa_openshift_version
   compute_machine_type = var.machine_type
