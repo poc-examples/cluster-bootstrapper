@@ -21,7 +21,7 @@ provider "rhcs" {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region = local.config.openshift.region
   ignore_tags {
     key_prefixes = ["kubernetes.io/"]
   }

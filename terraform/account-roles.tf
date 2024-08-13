@@ -4,10 +4,8 @@ data "rhcs_versions" "all" {}
 
 module "create_account_roles" {
   source  = "terraform-redhat/rosa-sts/aws"
-  version = "0.0.15"
+  version = "0.0.16"
 
-  create_operator_roles = false
-  create_oidc_provider  = false
   create_account_roles  = true
 
   account_role_prefix    = local.cluster_name

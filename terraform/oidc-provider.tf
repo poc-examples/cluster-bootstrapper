@@ -9,9 +9,8 @@ data "rhcs_rosa_operator_roles" "operator_roles" {
 
 module "oidc_provider" {
   source  = "terraform-redhat/rosa-sts/aws"
-  version = "0.0.15"
+  version = "0.0.16"
 
-  create_operator_roles = false
   create_oidc_provider  = true
 
   cluster_id                  = ""

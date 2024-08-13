@@ -1,12 +1,12 @@
 variable "rosa_openshift_version" {
   type        = string
-  default     = "4.15.0"
+  default     = "4.16.4"
   description = "Desired version of OpenShift for the cluster, for example '4.15.0'. If version is greater than the currently running version, an upgrade will be scheduled."
 }
 
 variable "rosa_openshift_version_short" {
   type        = string
-  default     = "4.15"
+  default     = "4.16"
 }
 
 variable "account_role_policies" {
@@ -61,7 +61,7 @@ variable "machine_type" {
 }
 
 variable "worker_node_replicas" {
-  default     = 2
+  default     = 3
   description = "Number of worker nodes to provision. Single zone clusters need at least 2 nodes, multizone clusters need at least 3 nodes"
   type        = number
 }
@@ -80,7 +80,7 @@ variable "vpc_cidr_block" {
 
 variable "aws_region" {
   type    = string
-  default = "us-east-1"
+  default = "us-east-2"
 }
 
 variable "ocm_environment" {

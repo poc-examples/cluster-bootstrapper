@@ -1,9 +1,8 @@
 module "operator_roles" {
   source  = "terraform-redhat/rosa-sts/aws"
-  version = "0.0.15"
+  version = "0.0.16"
 
   create_operator_roles = true
-  create_oidc_provider  = false
 
   rh_oidc_provider_thumbprint = rhcs_rosa_oidc_config.oidc_config.thumbprint
   rh_oidc_provider_url        = rhcs_rosa_oidc_config.oidc_config.oidc_endpoint_url
