@@ -54,7 +54,7 @@ resource "rhcs_cluster_rosa_classic" "rosa_sts_cluster" {
 
 resource "rhcs_cluster_wait" "wait_for_cluster_build" {
   cluster = rhcs_cluster_rosa_classic.rosa_sts_cluster.id
-  timeout = 60 # minutes
+  timeout = 90 # minutes
 }
 
 output "api_url" {
