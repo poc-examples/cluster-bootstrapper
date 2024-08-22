@@ -5,3 +5,4 @@ vars.yaml
 *.tfstate
 terraform.tfplan
 terraform.tfstate.backup
+main.tf

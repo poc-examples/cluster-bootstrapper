@@ -25,12 +25,15 @@ check-python-packages:
 	done
 	@echo "All required Python packages are installed."
 
-build: check-shell
+render:
+	@python3 scripts/render.py
+
+build: check-shell render
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan -out=terraform.tfplan
 	@terraform -chdir=terraform apply terraform.tfplan
 
-plan: check-shell
+plan: check-shell render
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan
 
@@ -41,6 +44,19 @@ configure: check-python-packages
 deploy: build configure
 	@echo "Set this to provide cluster information"
 
-destroy:
+destroy: check-shell render
 	@terraform -chdir=terraform destroy
 	@echo "Destroy"
+
+help:
+	@echo "Usage: make [target]"
+	@echo
+	@echo "Available targets:"
+	@echo "  check-shell             Check if required environment variables are set."
+	@echo "  check-python-packages   Check if required Python packages are installed."
+	@echo "  build                   Run Terraform init, plan, and apply commands."
+	@echo "  plan                    Run Terraform init and plan commands."
+	@echo "  configure               Run Ansible playbook for configuration."
+	@echo "  deploy                  Run build and configure targets."
+	@echo "  destroy                 Destroy the infrastructure created by Terraform."
+	@echo "  help                    Display this help message."

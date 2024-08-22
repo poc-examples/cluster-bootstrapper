@@ -1,0 +1,9 @@
+module "openshift_cluster" {
+    source = "github.com/poc-examples/terraform-clusters//modules/{{ cloud }}/{{ type }}"
+
+    region  =   local.cluster_config.region
+    cluster_name        = local.cluster_config.cluster_name
+    offline_token       = local.config.openshift.offline_token
+    admin_credentials   = local.config.openshift.admin.credentials
+    rosa_openshift_version  =   local.cluster_config.version
+}
