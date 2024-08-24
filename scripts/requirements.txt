@@ -2,3 +2,4 @@ jinja2
 openshift
 kubernetes
 ansible
+PyYAML==6.0.2

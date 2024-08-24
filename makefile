@@ -24,12 +24,12 @@ create_venv: check_virtualenv
 
 install_deps: create_venv
 	@echo "Activating virtual environment and installing dependencies..."
-	@. venv/local/bin/activate && pip install -r scripts/requirements.txt
+	@. venv/bin/activate && python3 -m pip install  -r scripts/requirements.txt
 
 render: check_shell install_deps
-	@python3 scripts/render.py
+	@. venv/bin/activate && python3 scripts/render.py
 
-build: check-shell render
+build: check_shell render
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan -out=terraform.tfplan
 	@terraform -chdir=terraform apply terraform.tfplan
@@ -38,7 +38,7 @@ plan: check_shell render
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan
 
-configure: install_deps
+configure: check_shell install_deps
 	@ansible-galaxy install -r ansible/requirements.yaml
 	@ansible-playbook ansible/bootstrap.yaml
 
@@ -48,6 +48,16 @@ deploy: build configure
 destroy: check_shell render
 	@terraform -chdir=terraform destroy
 	@echo "Destroy"
+
+test:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		--name test-cluster-bootstrapper \
+		bootstrapper \
+		make build && make configure
 
 help:
 	@echo "Usage: make [target]"

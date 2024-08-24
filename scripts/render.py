@@ -1,6 +1,6 @@
 import os
-import yaml
 from jinja2 import Environment, FileSystemLoader
+import yaml
 
 vars_file = './vars.yaml'
 terraform_dir = './terraform'
