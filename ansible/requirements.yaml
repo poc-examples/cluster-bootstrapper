@@ -1,0 +1,23 @@
+---
+
+roles:
+
+  - name: external-secrets
+    src: https://github.com/poc-examples/ansible-roles.git
+    scm: git
+    version: main
+    path: bootstrapper-roles/external-secrets
+
+  - name: gitops
+    src: https://github.com/poc-examples/ansible-roles.git
+    scm: git
+    version: main
+    path: bootstrapper-roles/gitops
+
+collections:
+
+  - name: community.kubernetes
+    source: https://galaxy.ansible.com
+
+  - name: community.okd
+    source: https://galaxy.ansible.com

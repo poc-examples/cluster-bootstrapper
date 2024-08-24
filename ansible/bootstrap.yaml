@@ -31,8 +31,8 @@
       ansible.builtin.shell:
         cmd: >
           oc login https://api.{{ terraform_outputs.domain.value }}:6443 \
-            --username={{ openshift.admin_credentials.username }} \
-            --password={{ openshift.admin_credentials.password }} \
+            --username={{ openshift.admin.credentials.username }} \
+            --password={{ openshift.admin.credentials.password }} \
             --insecure-skip-tls-verify=true
       register: login_output
       until: "'Login successful' in login_output.stdout"
@@ -62,20 +62,23 @@
       vars:
         domain: "{{ terraform_outputs.domain.value }}"
         api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
+        validate_certs: "{{ config.validate_certs }}"
+        gitops: "{{ config.gitops }}"
+        workshop: "{{ config.workshop }}"
       ansible.builtin.include_role:
         name: gitops
       when:
-        - openshift.services.gitops.enabled is defined
-        - openshift.services.gitops.enabled is true
+        - config.gitops.enabled is defined
+        - config.gitops.enabled is true
 
     ## RedHat Supported
     ## Boots Initial Secrets
-    - name: Secrets
-      vars:
-        domain: "{{ terraform_outputs.domain.value }}"
-        api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
-      ansible.builtin.include_role:
-        name: secrets
-      when:
-        - openshift.services.boot.enabled is defined
-        - openshift.services.boot.enabled is true
+    # - name: Secrets
+    #   vars:
+    #     domain: "{{ terraform_outputs.domain.value }}"
+    #     api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
+    #   ansible.builtin.include_role:
+    #     name: secrets
+    #   when:
+    #     - openshift.services.boot.enabled is defined
+    #     - openshift.services.boot.enabled is true

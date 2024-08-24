@@ -1,1 +1,0 @@
-# required directory for templates

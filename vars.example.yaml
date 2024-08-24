@@ -1,149 +1,49 @@
-# domain: rosa-564muo.i286.p1.openshiftapps.com
-# api_url: "https://api.rosa-564muo.i286.p1.openshiftapps.com:6443"
-
 openshift:
 
-  cloud: Amazon # Amazon or Azure
+  aws:
+    type: rosa
+    cluster_name: rosa
+    version: 4.16.4
+    region: us-east-2
 
-  admin_credentials:
-    name: "username"
-    password: "password"
+  admin:
+    credentials:
+      username: "<cluster-username>"
+      # Should be 14+ chars, upper and lower, with special characters
+      password: "<cluster-password>"
 
   # https://console.redhat.com/openshift/token/show
-  offline_token: rosa_token
+  offline_token: <rosa-token>
+
+config:
 
   validate_certs: false
-  cert_passphrase: "password"
 
-  services:
+  gitops:
+    enabled: true
+    channel: gitops-1.11
+    namespace: openshift-gitops
 
-    gitops:
-      namespace: openshift-gitops
-      channel: gitops-1.11
-      enabled: true
-      updater:
-        enabled: true
+  workshop:
+    chart:
+      enabled: false
+      name: boot
+      version: 0.2.5
+      repo: https://poc-examples.github.io/charts
+      # helmValues:
 
-    boot:
-      enabled: true
-      irsa: false
-      chartVersion: 0.2.4
-      helmValues:
-        domain: openshift.api
-
-        services:
-          chartVersion: 0.1.72
-
-        machinesets:
-          chartVersion: 0.1.26
-          enabled: true
-          helmValues:
-            machineset: 
-              enabled: true
-            machinesets:
-              - name: acs
-                machine_type: t3.2xlarge
-        
-        registry:
-          enabled: false
-
-        acs:
-          chartVersion: 0.1.22
-          enabled: true
-
-        acm:
-          namespace: open-cluster-management
-          chartVersion: 0.1.26
-          enabled: false
-
-        keycloak:
-          chartVersion: 0.1.39
-          enabled: false
-
-        gatekeeper:
-          chartVersion: 0.1.16
-          enabled: false
-
-        gitops:
-          namespace: openshift-gitops
-          channel: gitops-1.11
-          enabled: true
-          updater:
-            chartVersion: 0.1.0
-            enabled: true
-
-        tekton:
-          chartVersion: 0.1.66
-          enabled: false
-
-        sonarqube:
-          chartVersion: ~8
-          enabled: false
-
-        devhub:
-          chartVersion: 0.1.9
-          enabled: false
-
-        rhtas:
-          chartVersion: 0.1.34
-          namespace: rhtas
-          enabled: false
-
-        gitlab:
-          namespace: gitlab-system
-          chartVersion: 0.1.53
-          enabled: false
-
-        external_secrets:
-          enabled: true
-          chartVersion: 0.1.14
-          namespace: external-secrets
-
-        vault:
-          chartVersion: 0.27.0
-          enabled: true
-
-## SWAP TO GITEA MIRRORS OR UPGRADE GITLAB
-imports:
-  - name: "container library"
-    url: "https://github.com/poc-examples/container-library.git"
-  - name: "application catalog"
-    url: "https://github.com/poc-examples/application-catalog.git"
 
 pushsecrets:
-  - remoteKey: keycloak
+
+  - remoteKey: inference-models
     secrets:
-      - key: username
-        value: keycloak
-      - key: password
-        value: "<pass>"
-      - key: database
-        value: "keycloak"
-  - remoteKey: demo
-    secrets:
-      - key: username
-        value: "<username>"
-      - key: password
-        value: "<password>"
-      - key: server
-        value: "quay.io"
-  - remoteKey: signing
-    secrets:
-      - key: cosign.pub
-        value: <Cosign Pub Key>
-      - key: cosign.key
-        value: <Cosign Private Key>
-      - key: cosign.password
-        value: <passphrase>
-  - remoteKey: rekor
-    secrets:
-      - key: pub
-        value: <rekor Pub Key>
-      - key: key
-        value: <rekor Private Key>
-  - remoteKey: repo
-    secrets:
-      - key: username
-        value: root
-      - key: url
-        value: https://gitlab.apps.placeholder.domain/self-provisioned/manifests.git
+      - key: AWS_ACCESS_KEY_ID
+        value: <AWS_ACCESS_KEY_ID>
+      - key: AWS_DEFAULT_REGION
+        value: us-east-2
+      - key: AWS_SECRET_ACCESS_KEY
+        value: "<AWS_SECRET_ACCESS_KEY>"
+      - key: AWS_S3_BUCKET
+        value: "<AWS_S3_BUCKET>"
+      - key: AWS_S3_ENDPOINT
+        value: "https://s3.us-east-2.amazonaws.com"
