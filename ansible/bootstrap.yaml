@@ -27,16 +27,27 @@
       ansible.builtin.set_fact:
         terraform_outputs: "{{ tf_outputs.stdout | from_json }}"
 
+    - name: debug
+      debug:
+        msg: "{{terraform_outputs}}"
+
+    - name: debug
+      debug:
+        msg: "{{openshift.admin.credentials.username}}"
+
+    - name: debug
+      debug:
+        msg: "{{openshift.admin.credentials.password}}"
+
     - name: Login to OpenShift
       ansible.builtin.shell:
         cmd: >
           oc login https://api.{{ terraform_outputs.domain.value }}:6443 \
             --username={{ openshift.admin.credentials.username }} \
-            --password={{ openshift.admin.credentials.password }} \
-            --insecure-skip-tls-verify=true
+            --password={{ openshift.admin.credentials.password }}
       register: login_output
       until: "'Login successful' in login_output.stdout"
-      retries: 10
+      retries: 1
       delay: 30
       ignore_errors: yes
 
@@ -71,14 +82,11 @@
         - config.gitops.enabled is defined
         - config.gitops.enabled is true
 
-    ## RedHat Supported
-    ## Boots Initial Secrets
-    # - name: Secrets
-    #   vars:
-    #     domain: "{{ terraform_outputs.domain.value }}"
-    #     api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
-    #   ansible.builtin.include_role:
-    #     name: secrets
-    #   when:
-    #     - openshift.services.boot.enabled is defined
-    #     - openshift.services.boot.enabled is true
+    - name: Secrets Management
+      vars:
+        domain: "{{ terraform_outputs.domain.value }}"
+        api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
+        validate_certs: "{{ config.validate_certs }}"
+        secrets: "{{ config.secrets }}"
+      ansible.builtin.import_role:
+        name: secrets-manager
