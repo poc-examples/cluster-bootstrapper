@@ -20,7 +20,7 @@ It uses the following terraform modules for infra
     - Podman Installed
     - Linux
 
-### Pick the Workshop
+### Pick the Workshop Demo
 
 - [WorkShop Repo](https://github.com/poc-examples/workshops)
 
