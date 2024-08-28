@@ -50,7 +50,7 @@ cp vars.example.yaml vars.yaml
 Run the make script to deploy the demo.
 
 ```
-make deploy
+make podman_deploy
 ```
 
 ## How It Works

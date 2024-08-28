@@ -13,70 +13,64 @@ check_shell:
 	done
 	@echo "All required environment variables are set."
 
-check_virtualenv:
-	@echo "Checking if virtualenv is installed..."
-	@command -v virtualenv >/dev/null 2>&1 || \
-		{ echo >&2 "virtualenv not found. Installing..."; python3 -m pip install --user virtualenv; }
-
-create_venv: check_virtualenv
-	@echo "Creating virtual environment..."
-	@virtualenv venv
-
-install_deps: create_venv
-	@echo "Activating virtual environment and installing dependencies..."
+install_dependencies:
 	@python3 -m pip install --no-cache-dir -r scripts/requirements.txt
 
-render: check_shell install_deps
+render_templates: check_shell install_dependencies
 	@python3 scripts/render.py
 
-build: check_shell render
+terraform_apply: check_shell render_templates
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan -out=terraform.tfplan
 	@terraform -chdir=terraform apply terraform.tfplan
 
-plan: check_shell render
+terraform_plan: check_shell render_templates
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan
 
-configure: render
+ansible_setup: render_templates
 	@ansible-galaxy install -r ansible/requirements.yaml
-	@ansible --version
-	@ansible-galaxy collection list
 	@ansible-playbook ansible/bootstrap.yaml
 
-
-deploy: build configure
-	@echo "Set this to provide cluster information"
-
-destroy: check_shell render
+terraform_destroy: check_shell render_templates
 	@terraform -chdir=terraform destroy
-	@echo "Destroy"
 
-test:
+podman_deploy:
 	@podman run --rm -it \
 		-v $(shell pwd)/:/usr/src/app:z \
 		-w /usr/src/app \
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-		bootstrapper \
-		make build && make configure
+		docker.io/cengleby86/bootstrapper:latest \
+		make terraform_apply && make ansible_setup
 
-test-configure:
+podman_destroy:
 	@podman run --rm -it \
 		-v $(shell pwd)/:/usr/src/app:z \
 		-w /usr/src/app \
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-		bootstrapper make configure
+		docker.io/cengleby86/bootstrapper:latest \
+		make terraform_destroy
+
+podman_configure:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		docker.io/cengleby86/bootstrapper:latest \
+		make ansible_setup
 
 help:
 	@echo "Usage: make [target]"
 	@echo
 	@echo "Available targets:"
-	@echo "  check_shell             Check if required environment variables are set."
-	@echo "  build                   Run Terraform init, plan, and apply commands."
-	@echo "  plan                    Run Terraform init and plan commands."
-	@echo "  configure               Run Ansible playbook for configuration."
-	@echo "  deploy                  Run build and configure targets."
-	@echo "  destroy                 Destroy the infrastructure created by Terraform."
+	@echo "  check_env               Check if required environment variables are set."
+	@echo "  terraform_apply         Run Terraform init, plan, and apply commands."
+	@echo "  terraform_plan          Run Terraform init and plan commands."
+	@echo "  ansible_setup           Run Ansible playbook for configuration."
+	@echo "  podman_deploy           Run Terraform apply and Ansible setup in a Podman container."
+	@echo "  podman_destroy          Destroy infrastructure using Terraform in a Podman container."
+	@echo "  podman_configure        Run Ansible setup in a Podman container."
 	@echo "  help                    Display this help message."
