@@ -55,9 +55,7 @@ make podman_deploy
 
 ## How It Works
 
-This project leverages Ansible for the deployment of GitOps tools within an OpenShift environment, enabling secure, dynamic provisioning of secrets from services like Azure Key Vault or AWS Secrets Manager directly into the cluster. Concurrently, it adopts GitOps practices using tools such as ArgoCD to automate and manage deployments based on Git as the single source of truth. 
-
-This integrated approach ensures secure access to up-to-date credentials and streamlines application lifecycle management, enhancing operational efficiency, security, and compliance in cloud-native ecosystems.
+The Cluster Bootstrapper project automates the creation and management of OpenShift clusters in hybrid cloud/on-prem environments using Terraform and Ansible. The process begins with Terraform, which provisions the required infrastructure. Ansible is then used to deploy GitOps tools, such as ArgoCD, to manage application lifecycle.
 
 ## Considerations
 
