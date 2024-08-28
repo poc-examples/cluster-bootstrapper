@@ -55,7 +55,7 @@ make podman_deploy
 
 ## How It Works
 
-The Cluster Bootstrapper project automates the creation and management of OpenShift clusters in hybrid cloud/on-prem environments using Terraform and Ansible. The process begins with Terraform, which provisions the required infrastructure. Ansible is then used to deploy GitOps tools, such as ArgoCD, to manage application lifecycle.
+The Cluster Bootstrapper project automates the creation and management of OpenShift clusters in cloud environments using Terraform and Ansible. The process begins with Terraform, which provisions the required infrastructure. Ansible is then used to deploy GitOps tools, such as ArgoCD, to manage application lifecycle.
 
 ## Considerations
 
