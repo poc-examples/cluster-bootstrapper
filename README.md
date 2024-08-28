@@ -7,7 +7,6 @@ This is a github repo that sets up a running openshift cluster and launches a de
 It uses the following ansible repos
 
 - [gitops role](https://github.com/poc-examples/ansible-roles)
-- [gitlab role](https://github.com/poc-examples/gitlab-role)
 - [secrets-manager role](https://github.com/poc-examples/secrets-manager-role)
 
 It uses the following terraform modules for infra
