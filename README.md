@@ -4,6 +4,16 @@
 
 This is a github repo that sets up a running openshift cluster and launches a demo from [WorkShops Repo](https://github.com/poc-examples/workshops) using the rollsout-controller helm chart at [rollout-controller helm chart](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller).
 
+It uses the following ansible repos
+
+- [gitops role](https://github.com/poc-examples/ansible-roles)
+- [gitlab role](https://github.com/poc-examples/gitlab-role)
+- [secrets-manager role](https://github.com/poc-examples/secrets-manager-role)
+
+It uses the following terraform modules for infra
+
+- [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
+
 ## Prerequisites
 
     - Podman Installed
@@ -11,7 +21,7 @@ This is a github repo that sets up a running openshift cluster and launches a de
 
 ## Pick the Workshop
 
-    - [WorkShop Repo](https://github.com/poc-examples/workshops)
+- [WorkShop Repo](https://github.com/poc-examples/workshops)
 
 ## Clone the Repo
 
