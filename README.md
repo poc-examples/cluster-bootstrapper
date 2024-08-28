@@ -13,29 +13,31 @@ It uses the following terraform modules for infra
 
 - [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
 
-## Prerequisites
+## Getting Started
+
+### Prerequisites
 
     - Podman Installed
     - Linux
 
-## Pick the Workshop
+### Pick the Workshop
 
 - [WorkShop Repo](https://github.com/poc-examples/workshops)
 
-## Clone the Repo
+### Clone the Repo
 
 ```
 git clone https://github.com/poc-examples/cluster-bootstrapper.git
 ```
 
-## Export Variables
+### Export Variables
 
 ```
 export AWS_ACCESS_KEY_ID=<your-key>
 export AWS_SECRET_ACCESS_KEY=<your-key>
 ```
 
-## Configure vars.yaml
+### Configure vars.yaml
 
 Open the var.example.yaml file and configure it to point to the workshop chart you want.  Then change the name to var.yaml
 
@@ -43,7 +45,7 @@ Open the var.example.yaml file and configure it to point to the workshop chart y
 cp vars.example.yaml vars.yaml
 ```
 
-## Build the Demo
+### Build the Demo
 
 Run the make script to deploy the demo.
 
