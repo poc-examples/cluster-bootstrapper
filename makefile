@@ -11,7 +11,7 @@ check_os:
 		echo "Not running inside a container"; \
 	fi
 
-check_shell: check_os
+check_shell:
 	@for var in $(REQUIRED_ENV_VARS); do \
 		if [ -z "$${!var}" ]; then \
 			echo "Error: $$var is not set"; \
