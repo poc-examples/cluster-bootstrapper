@@ -85,9 +85,6 @@ help:
 	@echo
 	@echo "Available targets:"
 	@echo "  check_env               Check if required environment variables are set."
-	@echo "  terraform_apply         Run Terraform init, plan, and apply commands."
-	@echo "  terraform_plan          Run Terraform init and plan commands."
-	@echo "  ansible_setup           Run Ansible playbook for configuration."
 	@echo "  podman_deploy           Run Terraform apply and Ansible setup in a Podman container."
 	@echo "  podman_destroy          Destroy infrastructure using Terraform in a Podman container."
 	@echo "  podman_configure        Run Ansible setup in a Podman container."
