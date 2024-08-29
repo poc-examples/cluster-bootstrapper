@@ -1,7 +1,7 @@
 openshift:
 
   aws:
-    type: rosa
+    type: rosa-rhoai-devex
     cluster_name: rosa
     version: 4.16.4
     region: us-east-2
@@ -45,7 +45,7 @@ config:
     pushSecrets: []
       ## You can provide user defined secrets to the cluster
       ## By defining the following configuration
-      
+
       # - name: example-secret
       #   secrets:
       #     AWS_ACCESS_KEY_ID: <access_key_id>
