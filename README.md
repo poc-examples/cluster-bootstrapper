@@ -20,6 +20,12 @@ It uses the following terraform modules to build the infra:
     - Podman Installed
     - Linux
 
+### Deployment Time Expectations
+
+- AWS ROSA - 40min cluster build + 15min workshops deployment
+- AWS HCP - Available in future updates
+- Azure - Available in future updates
+
 ### Pick the Workshop Demo
 
 - [WorkShop Repo](https://github.com/poc-examples/workshops)
