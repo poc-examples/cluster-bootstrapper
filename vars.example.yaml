@@ -43,7 +43,10 @@ config:
       enabled: true
       token: <vault_token>
     pushSecrets: []
-      # - name: inference-models
+      ## You can provide user defined secrets to the cluster
+      ## By defining the following configuration
+      
+      # - name: example-secret
       #   secrets:
       #     AWS_ACCESS_KEY_ID: <access_key_id>
       #     AWS_DEFAULT_REGION: us-east-2
