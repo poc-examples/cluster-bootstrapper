@@ -1,8 +1,8 @@
 openshift:
 
   aws:
-    type: rosa-rhoai-devex
-    cluster_name: rosa
+    type: rosa
+    cluster_name: rosa-rhoai-devex
     version: 4.16.4
     region: us-east-2
     workers: 6
