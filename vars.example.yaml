@@ -5,6 +5,7 @@ openshift:
     cluster_name: rosa
     version: 4.16.4
     region: us-east-2
+    workers: 6
 
   admin:
     credentials:
@@ -28,7 +29,7 @@ config:
     chart:
       enabled: true
       name: rhoai-devex
-      version: 0.1.34
+      version: 0.1.37
       repo: https://poc-examples.github.io/workshops
       helmValues: null
 
