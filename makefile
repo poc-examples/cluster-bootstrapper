@@ -51,7 +51,7 @@ podman_test:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		make check_os
+		bash -c "make check_os && make check_os"
 
 podman_deploy:
 	@podman run --rm -it \
@@ -60,7 +60,7 @@ podman_deploy:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		make check_os && make terraform_apply && make ansible_setup
+		bash -c "make check_os && make terraform_apply && make ansible_setup"
 
 podman_destroy:
 	@podman run --rm -it \
@@ -69,7 +69,7 @@ podman_destroy:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		make check_os && make terraform_destroy
+		bash -c "make check_os && make terraform_destroy"
 
 podman_configure:
 	@podman run --rm -it \
@@ -78,7 +78,7 @@ podman_configure:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		make check_os && make ansible_setup
+		bash -c "make check_os && make ansible_setup"
 
 help:
 	@echo "Usage: make [target]"

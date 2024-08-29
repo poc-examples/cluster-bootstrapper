@@ -45,12 +45,36 @@ Open the var.example.yaml file and configure it to point to the workshop chart y
 cp vars.example.yaml vars.yaml
 ```
 
+In the vars.yaml file replace:
+`<cluster_username>` with "cluster_admin"
+`<cluster_password>` with a 14 character long complex password
+
+`<offline-toke>` with you console token for rosa located at [Cloud Console](https://console.redhat.com/openshift/token/show)
+`<token>` in secrets -> vault -> token to "root"
+``
+
 ### Build the Demo
 
 Run the make script to deploy the demo.
 
 ```
 make podman_deploy
+```
+
+### Login to the Demo Cluster
+
+Use the cloud console to get the link to your cluster.  The can be found at:
+
+[Cloud Console - Cluster List](https://console.redhat.com/openshift/cluster-list)
+
+Click on your cluster and click the open console button.
+
+### Destroy the Demo
+
+When you're done with the demo you can destroy the cluster using:
+
+```
+make podman_destroy
 ```
 
 ## How It Works
