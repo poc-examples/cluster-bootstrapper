@@ -47,7 +47,7 @@
             --password={{ openshift.admin.credentials.password }}
       register: login_output
       until: "'Login successful' in login_output.stdout"
-      retries: 15
+      retries: 45
       delay: 30
       ignore_errors: yes
       no_log: true
