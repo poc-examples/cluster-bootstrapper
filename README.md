@@ -46,11 +46,11 @@ cp vars.example.yaml vars.yaml
 ```
 
 In the vars.yaml file replace:
-`<cluster_username>` with "cluster_admin"
-`<cluster_password>` with a 14 character long complex password
+- `<cluster_username>` with "cluster_admin"
+- `<cluster_password>` with a 14 character long complex password
 
-`<offline-toke>` with you console token for rosa located at [Cloud Console](https://console.redhat.com/openshift/token/show)
-`<token>` in secrets -> vault -> token to "root"
+- `<offline-toke>` with you console token for rosa located at [Cloud Console](https://console.redhat.com/openshift/token/show)
+- `<token>` in secrets -> vault -> token to "root"
 ``
 
 ### Build the Demo
