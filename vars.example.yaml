@@ -2,7 +2,8 @@ openshift:
 
   aws:
     type: rosa
-    cluster_name: rosa-rhoai-devex
+    # Name can only be 13 chars
+    cluster_name: rosa-rhoai
     version: 4.16.4
     region: us-east-2
     workers: 6
