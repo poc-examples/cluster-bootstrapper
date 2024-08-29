@@ -2,7 +2,16 @@ SHELL := /bin/bash
 
 REQUIRED_ENV_VARS := AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
-check_shell:
+check_os:
+	@if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || grep -q 'container=' /proc/1/environ; then \
+		echo "Running in container"; \
+		echo "Hostname: $$(hostname)" && echo; \
+		cat /etc/os-release && echo; \
+	else \
+		echo "Not running inside a container"; \
+	fi
+
+check_shell: check_os
 	@for var in $(REQUIRED_ENV_VARS); do \
 		if [ -z "$${!var}" ]; then \
 			echo "Error: $$var is not set"; \
@@ -29,11 +38,20 @@ terraform_plan: check_shell render_templates
 	@terraform -chdir=terraform plan
 
 ansible_setup: render_templates
-	@ansible-galaxy install -r ansible/requirements.yaml
+	@ansible-galaxy install -r ansible/requirements.yaml --force
 	@ansible-playbook ansible/bootstrap.yaml
 
 terraform_destroy: check_shell render_templates
 	@terraform -chdir=terraform destroy
+
+podman_test:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		docker.io/cengleby86/bootstrapper:latest \
+		make check_os
 
 podman_deploy:
 	@podman run --rm -it \
@@ -41,7 +59,8 @@ podman_deploy:
 		-w /usr/src/app \
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-		docker.io/cengleby86/bootstrapper:latest make terraform_apply && make ansible_setup
+		docker.io/cengleby86/bootstrapper:latest \
+		make terraform_apply && make ansible_setup
 
 podman_destroy:
 	@podman run --rm -it \
