@@ -41,8 +41,7 @@ podman_deploy:
 		-w /usr/src/app \
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-		docker.io/cengleby86/bootstrapper:latest \
-		make terraform_apply && make ansible_setup
+		docker.io/cengleby86/bootstrapper:latest make terraform_apply && make ansible_setup
 
 podman_destroy:
 	@podman run --rm -it \
