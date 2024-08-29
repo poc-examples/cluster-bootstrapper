@@ -66,6 +66,21 @@
       debug:
         msg: "{{token}}"
 
+    - name: Ensure all initial cluster pods are healthy
+      community.kubernetes.k8s_info:
+        host: "https://api.{{ terraform_outputs.domain.value }}:6443"
+        api_key: "{{ token }}"
+        validate_certs: "{{ config.validate_certs }}"
+        api_version: v1
+        kind: Pod
+      register: pod_info
+      until:
+        - pod_info.resources is defined
+        - pod_info.resources | length > 0
+        - pod_info.resources | selectattr('status.phase', 'equalto', 'Pending') | length == 0
+      retries: 40
+      delay: 30
+
     ## RedHat Supported
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
     ## Patches ArgoCD to use kustomize with helm plugin
