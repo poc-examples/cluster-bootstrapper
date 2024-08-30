@@ -66,7 +66,7 @@
       debug:
         msg: "{{token}}"
 
-    - name: Waiting for OpenShift Healthy State - Can Take up to 5-7 Minutes
+    - name: Waiting for OpenShift Healthy State - Can Take up to 12-15 Minutes
       community.kubernetes.k8s_info:
         host: "https://api.{{ terraform_outputs.domain.value }}:6443"
         api_key: "{{ token }}"
