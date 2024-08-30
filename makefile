@@ -22,6 +22,14 @@ check_shell:
 	done
 	@echo "All required environment variables are set."
 
+clean:
+	@rm ./terraform/main.tf \
+		./terraform/.terraform.lock.hcl \
+		./terraform/terraform.tfplan \
+		./terraform/terraform.tfstate \
+		./terraform/terraform.tfstate.backup \
+		./terraform/main.tf
+
 install_dependencies:
 	@python3 -m pip install --no-cache-dir -r scripts/requirements.txt
 
@@ -69,7 +77,7 @@ podman_destroy:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		bash -c "make check_os && make terraform_destroy"
+		bash -c "make check_os && make terraform_destroy && make clean"
 
 podman_configure:
 	@podman run --rm -it \
