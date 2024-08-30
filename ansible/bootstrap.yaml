@@ -39,7 +39,7 @@
       debug:
         msg: "{{openshift.admin.credentials.password}}"
 
-    - name: Login to OpenShift
+    - name: Connecting to OpenShift - Can Take up to 5-7 Minutes
       ansible.builtin.shell:
         cmd: >
           oc login https://api.{{ terraform_outputs.domain.value }}:6443 \
@@ -66,7 +66,7 @@
       debug:
         msg: "{{token}}"
 
-    - name: Ensure all initial cluster pods are healthy
+    - name: Waiting for OpenShift Healthy State - Can Take up to 5-7 Minutes
       community.kubernetes.k8s_info:
         host: "https://api.{{ terraform_outputs.domain.value }}:6443"
         api_key: "{{ token }}"
