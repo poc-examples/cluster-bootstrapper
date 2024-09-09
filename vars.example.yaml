@@ -10,12 +10,12 @@ openshift:
 
   admin:
     credentials:
-      username: "<Username>"
+      username: "{{ CLUSTER_USERNAME }}"
       # Should be 14+ chars, upper and lower, with special characters
-      password: "<Password>"
+      password: "{{ CLUSTER_PASSWORD }}"
 
   # https://console.redhat.com/openshift/token/show
-  offline_token: "<Rosa_Token>"
+  offline_token: "{{ ROSA_TOKEN }}"
 
 config:
 

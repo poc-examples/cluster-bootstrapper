@@ -4,11 +4,11 @@ REQUIRED_ENV_VARS := AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
 check_os:
 	@if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || grep -q 'container=' /proc/1/environ; then \
-		echo "Running in container"; \
-		echo "Hostname: $$(hostname)" && echo; \
+		echo "Run Mode: Container"; \
+		echo "Container Hostname: $$(hostname)" && echo; \
 		cat /etc/os-release && echo; \
 	else \
-		echo "Not running inside a container"; \
+		echo "Run Mode: Local"; \
 	fi
 
 check_shell:
@@ -50,16 +50,7 @@ ansible_setup: render_templates
 	@ansible-playbook ansible/bootstrap.yaml
 
 terraform_destroy: check_shell render_templates
-	@terraform -chdir=terraform destroy
-
-podman_test:
-	@podman run --rm -it \
-		-v $(shell pwd)/:/usr/src/app:z \
-		-w /usr/src/app \
-		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-		docker.io/cengleby86/bootstrapper:latest \
-		bash -c "make check_os && make check_os"
+	@terraform -chdir=terraform destroy $(AUTO_APPROVE)
 
 podman_deploy:
 	@podman run --rm -it \
@@ -87,6 +78,57 @@ podman_configure:
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "make check_os && make ansible_setup"
+
+podman_test_build:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
+		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
+		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		docker.io/cengleby86/bootstrapper:latest \
+		bash -c "\
+			j2 --format=env vars.example.yaml > vars.yaml \
+			&& echo -e 'Jinja2 template rendered\\n' \
+			&& make check_os \
+			&& make terraform_apply \
+		"
+
+podman_test_configure:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
+		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
+		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		docker.io/cengleby86/bootstrapper:latest \
+		bash -c "\
+			j2 --format=env vars.example.yaml > vars.yaml \
+			&& echo -e 'Jinja2 template rendered\\n' \
+			&& make check_os \
+			&& make ansible_setup \
+		"
+
+podman_test_cleanup:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
+		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
+		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		docker.io/cengleby86/bootstrapper:latest \
+		bash -c "\
+			j2 --format=env vars.example.yaml > test-vars.yaml \
+			&& echo -e 'Jinja2 template rendered\\n' \
+			&& make check_os \
+			&& make terraform_destroy AUTO_APPROVE="-auto-approve" \
+		"
 
 help:
 	@echo "Usage: make [target]"

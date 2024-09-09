@@ -24,6 +24,7 @@ provider "aws" {
 }
 
 locals {
+
     config = yamldecode(file("../vars.yaml"))
 
     available_providers = toset([
@@ -42,4 +43,5 @@ locals {
         local.cloud_provider, 
         null
     )
+
 }

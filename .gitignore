@@ -7,3 +7,4 @@ terraform.tfplan
 terraform.tfstate.backup
 main.tf
 venv
+test-vars.yaml
