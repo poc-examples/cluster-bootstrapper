@@ -32,7 +32,6 @@ config:
       name: rhoai-devex
       version: 0.1.38
       repo: https://poc-examples.github.io/workshops
-      helmValues: null
 
   # Optional: This section optional creates additional user defined secrets.
   # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
