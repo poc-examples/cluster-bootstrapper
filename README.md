@@ -56,7 +56,6 @@ In the vars.yaml file replace:
 - `<cluster_password>` with a 14 character long complex password
 
 - `<offline-toke>` with you console token for rosa located at [Cloud Console](https://console.redhat.com/openshift/token/show)
-- `<token>` in secrets -> vault -> token to "root"
 
 
 ### Build the Demo
