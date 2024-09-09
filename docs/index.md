@@ -11,9 +11,8 @@ Cluster Bootstrapper helps you automate the deployment and management of OpenShi
 - Supports AWS, Azure, and on-prem environments
 
 ## Quick Links
-- [Getting Started](getting-started.md)
-- [Installation](installation.md)
+- [Getting Started](getting-started/getting-started.md)
+- [List of Workshops](installation.md)
 - [Configuration](configuration.md)
 - [Usage](usage.md)
 - [Examples](examples.md)
-
