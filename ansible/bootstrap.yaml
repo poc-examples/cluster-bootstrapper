@@ -22,17 +22,31 @@
         cmd: "terraform output -json"
         chdir: "../terraform"
       register: tf_outputs
+      when:
+        - openshift.terraform is not defined or openshift.terraform == true
 
     - name: Convert JSON output to Dictionary
       ansible.builtin.set_fact:
         terraform_outputs: "{{ tf_outputs.stdout | from_json }}"
+      when:
+        - openshift.terraform is not defined or openshift.terraform == true
+
+    - name: Set domain based on if domain is provided
+      ansible.builtin.set_fact:
+        openshift_domain: >-
+          {{ 
+            openshift.domain 
+            if openshift.domain is defined and openshift.domain | length > 0
+            else terraform_outputs.domain.value 
+          }}
 
     - name: Connecting to OpenShift - Can Take up to 7-15 Minutes
       ansible.builtin.shell:
         cmd: >
-          oc login https://api.{{ terraform_outputs.domain.value }}:6443 \
+          oc login https://api.{{ openshift_domain }}:6443 \
             --username={{ openshift.admin.credentials.username }} \
-            --password={{ openshift.admin.credentials.password }}
+            --password={{ openshift.admin.credentials.password }} \
+            --insecure-skip-tls-verify=true
       register: login_output
       until: "'Login successful' in login_output.stdout"
       retries: 45
@@ -52,7 +66,7 @@
 
     - name: Waiting for OpenShift Healthy State - Can Take up to 12-15 Minutes
       community.kubernetes.k8s_info:
-        host: "https://api.{{ terraform_outputs.domain.value }}:6443"
+        host: "https://api.{{ openshift_domain }}:6443"
         api_key: "{{ token }}"
         validate_certs: "{{ config.validate_certs }}"
         api_version: v1
@@ -71,8 +85,8 @@
     ## Optionally - Also installs Image-Updater
     - name: GitOps
       vars:
-        domain: "{{ terraform_outputs.domain.value }}"
-        api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
+        domain: "{{ openshift_domain }}"
+        api_url: "https://api.{{ openshift_domain }}:6443"
         validate_certs: "{{ config.validate_certs }}"
         gitops: "{{ config.gitops }}"
         workshop: "{{ config.workshop }}"
@@ -84,8 +98,8 @@
 
     - name: Secrets Management
       vars:
-        domain: "{{ terraform_outputs.domain.value }}"
-        api_url: "https://api.{{ terraform_outputs.domain.value }}:6443"
+        domain: "{{ openshift_domain }}"
+        api_url: "https://api.{{ openshift_domain }}:6443"
         validate_certs: "{{ config.validate_certs }}"
         secrets: "{{ config.secrets }}"
       ansible.builtin.import_role:

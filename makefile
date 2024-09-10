@@ -2,26 +2,6 @@ SHELL := /bin/bash
 
 REQUIRED_ENV_VARS := AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
 
-check_os:
-	@if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || grep -q 'container=' /proc/1/environ; then \
-		echo "Run Mode: Container"; \
-		echo "Container Hostname: $$(hostname)" && echo; \
-		cat /etc/os-release && echo; \
-	else \
-		echo "Run Mode: Local"; \
-	fi
-
-check_shell:
-	@for var in $(REQUIRED_ENV_VARS); do \
-		if [ -z "$${!var}" ]; then \
-			echo "Error: $$var is not set"; \
-			exit 1; \
-		else \
-			echo "$$var is set"; \
-		fi \
-	done
-	@echo "All required environment variables are set."
-
 clean:
 	@rm ./terraform/main.tf \
 		./terraform/.terraform.lock.hcl \
@@ -33,23 +13,26 @@ clean:
 install_dependencies:
 	@python3 -m pip install --no-cache-dir -r scripts/requirements.txt
 
-render_templates: check_shell install_dependencies
+preflight_checks: install_dependencies
+	@python3 ./scripts/preflight-checks.py 
+
+render_templates:
 	@python3 scripts/render.py
 
-terraform_apply: check_shell render_templates
+terraform_apply: 
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan -out=terraform.tfplan
 	@terraform -chdir=terraform apply terraform.tfplan
 
-terraform_plan: check_shell render_templates
+terraform_plan: 
 	@terraform -chdir=terraform init
 	@terraform -chdir=terraform plan
 
-ansible_setup: render_templates
+ansible_setup: 
 	@ansible-galaxy install -r ansible/requirements.yaml --force
 	@ansible-playbook ansible/bootstrap.yaml
 
-terraform_destroy: check_shell render_templates
+terraform_destroy: 
 	@terraform -chdir=terraform destroy $(AUTO_APPROVE)
 
 podman_deploy:
@@ -59,7 +42,7 @@ podman_deploy:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		bash -c "make check_os && make terraform_apply && make ansible_setup"
+		bash -c "make preflight_checks && make terraform_apply && make ansible_setup"
 
 podman_destroy:
 	@podman run --rm -it \
@@ -68,7 +51,7 @@ podman_destroy:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		bash -c "make check_os && make terraform_destroy && make clean"
+		bash -c "make preflight_checks && make terraform_destroy && make clean"
 
 podman_configure:
 	@podman run --rm -it \
@@ -77,7 +60,7 @@ podman_configure:
 		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 		docker.io/cengleby86/bootstrapper:latest \
-		bash -c "make check_os && make ansible_setup"
+		bash -c "make preflight_checks && make ansible_setup"
 
 podman_test_build:
 	@podman run --rm -it \
@@ -92,7 +75,7 @@ podman_test_build:
 		bash -c "\
 			j2 --format=env vars.example.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
-			&& make check_os \
+			&& make preflight_checks \
 			&& make terraform_apply \
 		"
 
@@ -109,7 +92,7 @@ podman_test_configure:
 		bash -c "\
 			j2 --format=env vars.example.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
-			&& make check_os \
+			&& make preflight_checks \
 			&& make ansible_setup \
 		"
 
@@ -126,7 +109,7 @@ podman_test_cleanup:
 		bash -c "\
 			j2 --format=env vars.example.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
-			&& make check_os \
+			&& make preflight_checks \
 			&& make terraform_destroy AUTO_APPROVE="-auto-approve" \
 		"
 
