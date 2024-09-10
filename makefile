@@ -91,7 +91,7 @@ podman_test_build:
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
 			j2 --format=env vars.example.yaml > vars.yaml \
-			&& echo -e 'Jinja2 template rendered\\n' \
+			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make check_os \
 			&& make terraform_apply \
 		"
@@ -108,7 +108,7 @@ podman_test_configure:
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
 			j2 --format=env vars.example.yaml > vars.yaml \
-			&& echo -e 'Jinja2 template rendered\\n' \
+			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make check_os \
 			&& make ansible_setup \
 		"
@@ -124,8 +124,8 @@ podman_test_cleanup:
 		-e ROSA_TOKEN=${ROSA_TOKEN} \
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
-			j2 --format=env vars.example.yaml > test-vars.yaml \
-			&& echo -e 'Jinja2 template rendered\\n' \
+			j2 --format=env vars.example.yaml > vars.yaml \
+			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make check_os \
 			&& make terraform_destroy AUTO_APPROVE="-auto-approve" \
 		"
