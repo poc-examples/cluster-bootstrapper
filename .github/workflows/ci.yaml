@@ -31,8 +31,10 @@ jobs:
           CLUSTER_PASSWORD: ${{ secrets.CLUSTER_PASSWORD }}
           ROSA_TOKEN: ${{ secrets.ROSA_TOKEN }}
           MASK: ${{ secrets.MASK }}
+          MASK1: ${{ secrets.MASK1 }}
         run: |
           echo "::add-mask::$MASK"
+          echo "::add-mask::$MASK1"
           make podman_test_build
 
       - name: Configure Cluster
