@@ -76,6 +76,7 @@ podman_test_build:
 			j2 --format=env vars.example.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make preflight_checks \
+			&& make render_templates \
 			&& make terraform_apply \
 		"
 
@@ -93,6 +94,7 @@ podman_test_configure:
 			j2 --format=env vars.example.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make preflight_checks \
+			&& make render_templates \
 			&& make ansible_setup \
 		"
 
@@ -110,6 +112,7 @@ podman_test_cleanup:
 			j2 --format=env vars.example.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make preflight_checks \
+			&& make render_templates \
 			&& make terraform_destroy AUTO_APPROVE="-auto-approve" \
 		"
 
