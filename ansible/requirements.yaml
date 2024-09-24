@@ -1,17 +1,5 @@
 ---
 
-# roles:
-
-#   - name: gitops
-#     src: https://github.com/poc-examples/ansible-roles.git
-#     scm: git
-#     version: main
-
-#   - name: secrets-manager
-#     src: https://github.com/poc-examples/secrets-manager-role.git
-#     scm: git
-#     version: main
-
 collections:
 
   - name: bootstrap.workshop
