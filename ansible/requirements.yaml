@@ -15,7 +15,7 @@
 collections:
 
   - name: bootstrap.workshop
-    source: https://github.com/poc-examples/ansible-collections.git
+    source: https://github.com/poc-examples/ansible-collections.git#/bootstrap/workshop
     type: git
     version: main
 

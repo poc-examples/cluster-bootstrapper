@@ -1,4 +1,4 @@
-vars.yaml
+vars.yaml*
 */manifests/*.yaml
 *.pem
 .terraform*
