@@ -9,7 +9,6 @@
     - community.kubernetes
     - community.general
     - bootstrap.workshop
-
   vars:
     state: present
   
@@ -42,33 +41,19 @@
           }}
 
     - name: Connecting to OpenShift - Can Take up to 7-15 Minutes
-      ansible.builtin.shell:
-        cmd: >
-          oc login https://api.{{ openshift_domain }}:6443 \
-            --username={{ openshift.admin.credentials.username }} \
-            --password={{ openshift.admin.credentials.password }} \
-            --insecure-skip-tls-verify=true
-      register: login_output
-      until: "'Login successful' in login_output.stdout"
+      community.okd.openshift_auth:
+        host: "https://api.{{ openshift_domain }}:6443"
+        username: "{{ openshift.admin.credentials.username }}"
+        password: "{{ openshift.admin.credentials.password }}"
+        verify_ssl: false
+      register: login
       retries: 45
       delay: 30
-      ignore_errors: yes
-      no_log: true
-
-    - name: Get the user token
-      ansible.builtin.shell:
-        cmd: oc whoami -t
-      register: oc_token
-      changed_when: false
-
-    - name: Set Token
-      ansible.builtin.set_fact:
-        token: "{{ oc_token.stdout }}"
 
     - name: Waiting for OpenShift Healthy State - Can Take up to 12-15 Minutes
       community.kubernetes.k8s_info:
         host: "https://api.{{ openshift_domain }}:6443"
-        api_key: "{{ token }}"
+        api_key: "{{ login.openshift_auth.api_key }}"
         validate_certs: "{{ config.validate_certs }}"
         api_version: v1
         kind: Pod
@@ -80,14 +65,27 @@
       retries: 40
       delay: 30
 
+    - name: Fetch the Ingress resource
+      community.kubernetes.k8s_info:
+        host: "https://api.{{ openshift_domain }}:6443"
+        api_key: "{{ login.openshift_auth.api_key }}"
+        validate_certs: "{{ config.validate_certs }}"
+        api_version: config.openshift.io/v1
+        kind: Ingress
+        name: cluster
+      register: ingress_info
+
+    - name: Extract the domain from the Ingress resource
+      set_fact:
+        ingress_domain: "{{ ingress_info.resources[0].spec.domain | regex_replace('^apps\\.', '') }}"
+
     ## RedHat Supported
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
-    ## Patches ArgoCD to use kustomize with helm plugin
-    ## Optionally - Also installs Image-Updater
     - name: GitOps
       vars:
-        domain: "{{ openshift_domain }}"
+        domain: "{{ ingress_domain }}"
         api_url: "https://api.{{ openshift_domain }}:6443"
+        token: "{{ login.openshift_auth.api_key }}"
         validate_certs: "{{ config.validate_certs }}"
         gitops: "{{ config.gitops }}"
         workshop: "{{ config.workshop }}"
@@ -99,8 +97,8 @@
 
     - name: Secrets Management
       vars:
-        domain: "{{ openshift_domain }}"
         api_url: "https://api.{{ openshift_domain }}:6443"
+        token: "{{ login.openshift_auth.api_key }}"
         validate_certs: "{{ config.validate_certs }}"
         secrets: "{{ config.secrets }}"
       ansible.builtin.import_role:

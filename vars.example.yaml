@@ -30,19 +30,17 @@ config:
     chart:
       enabled: true
       name: rhoai-devex
-      version: 0.1.38
+      version: 0.1.45
       repo: https://poc-examples.github.io/workshops
 
   # Optional: This section optional creates additional user defined secrets.
   # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
   secrets:
+    vault:
+      enabled: true
     namespace: secrets-manager
-    pushSecrets: []
-
-      # - name: example-secret
-      #   secrets:
-      #     AWS_ACCESS_KEY_ID: <access_key_id>
-      #     AWS_DEFAULT_REGION: us-east-2
-      #     AWS_SECRET_ACCESS_KEY: <secret_access_key>
-      #     AWS_S3_BUCKET: <bucket>
-      #     AWS_S3_ENDPOINT: https://s3.us-east-2.amazonaws.com
+    pushSecrets:
+      - name: aws-credentials
+        secrets:
+          AWS_ACCESS_KEY_ID: "{{ AWS_ACCESS_KEY_ID }}"
+          AWS_SECRET_ACCESS_KEY: "{{ AWS_SECRET_ACCESS_KEY }}"
