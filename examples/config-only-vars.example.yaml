@@ -15,14 +15,14 @@ config:
 
   gitops:
     enabled: true
-    channel: gitops-1.11
+    channel: gitops-1.14
     namespace: openshift-gitops
 
   workshop:
     chart:
       enabled: true
       name: rhoai-devex
-      version: 0.1.38
+      version: 0.1.45
       repo: https://poc-examples.github.io/workshops
 
   # Optional: This section optional creates additional user defined secrets.
