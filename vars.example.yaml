@@ -30,7 +30,7 @@ config:
     chart:
       enabled: true
       name: rhoai-devex
-      version: 0.1.52
+      version: 0.1.53
       repo: https://poc-examples.github.io/workshops
 
   # Optional: This section optional creates additional user defined secrets.
