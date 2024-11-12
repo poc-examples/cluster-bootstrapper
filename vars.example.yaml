@@ -3,8 +3,8 @@ openshift:
   aws:
     type: rosa
     # Name can only be 13 chars
-    cluster_name: rosa-rhoai-1
-    version: 4.16.13
+    cluster_name: rosa-rhoai-3
+    version: 4.16.18
     region: us-east-2
     workers: 7
 
@@ -30,7 +30,7 @@ config:
     chart:
       enabled: true
       name: rhoai-devex
-      version: 0.1.53
+      version: 0.1.70
       repo: https://poc-examples.github.io/workshops
 
   # Optional: This section optional creates additional user defined secrets.

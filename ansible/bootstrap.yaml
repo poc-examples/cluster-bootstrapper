@@ -81,7 +81,19 @@
 
     ## RedHat Supported
     ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
-    - name: GitOps
+    - name: Install OpenShift-GitOps Operator
+      vars:
+        api_url: "https://api.{{ openshift_domain }}:6443"
+        token: "{{ login.openshift_auth.api_key }}"
+        validate_certs: "{{ config.validate_certs }}"
+        gitops: "{{ config.gitops }}"
+      ansible.builtin.include_role:
+        name: gitops-operator
+      when:
+        - config.gitops.enabled is defined
+        - config.gitops.enabled is true
+
+    - name: Configure OpenShift-GitOps Instance
       vars:
         domain: "{{ ingress_domain }}"
         api_url: "https://api.{{ openshift_domain }}:6443"
@@ -90,7 +102,7 @@
         gitops: "{{ config.gitops }}"
         workshop: "{{ config.workshop }}"
       ansible.builtin.include_role:
-        name: gitops
+        name: gitops-instance
       when:
         - config.gitops.enabled is defined
         - config.gitops.enabled is true
