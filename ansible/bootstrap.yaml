@@ -101,6 +101,7 @@
         validate_certs: "{{ config.validate_certs }}"
         gitops: "{{ config.gitops }}"
         workshop: "{{ config.workshop }}"
+        cluster: "{{ openshift.aws }}"
       ansible.builtin.include_role:
         name: gitops-instance
       when:
@@ -113,5 +114,6 @@
         token: "{{ login.openshift_auth.api_key }}"
         validate_certs: "{{ config.validate_certs }}"
         secrets: "{{ config.secrets }}"
+        rosa_token: "{{ openshift.offline_token }}"
       ansible.builtin.import_role:
         name: secrets-manager

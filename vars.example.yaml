@@ -2,11 +2,11 @@ openshift:
 
   aws:
     type: rosa
-    # Name can only be 13 chars
-    cluster_name: rosa-rhoai-3
+    # Name can only be 13 chars Max
+    cluster_name: rosa-rhoai-5
     version: 4.16.18
     region: us-east-2
-    workers: 7
+    workers: 4
 
   admin:
     credentials:
@@ -29,8 +29,8 @@ config:
   workshop:
     chart:
       enabled: true
-      name: rhoai-devex
-      version: 0.1.72
+      name: base-keycloak
+      version: 0.1.10
       repo: https://poc-examples.github.io/workshops
 
   # Optional: This section optional creates additional user defined secrets.
