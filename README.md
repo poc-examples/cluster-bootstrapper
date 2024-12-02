@@ -1,4 +1,4 @@
-# Quickstart Guide
+# Cluster Bootstrapper - Quickstart Guide
 
 ## What is Cluster Bootstrapper
 
@@ -63,22 +63,20 @@ make podman_test_cleanup
 
 The Cluster Bootstrapper project automates the creation and management of OpenShift clusters in cloud environments using Terraform and Ansible. The process begins with Terraform, which provisions the required infrastructure. Ansible is then used to deploy GitOps tools, such as ArgoCD, to manage application lifecycle.
 
-It uses the following ansible collections to do the initial configuration:
+Terraform References:
+- [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
 
-1. [GitOps Operator](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-operator)
+Ansible References:
+- [GitOps Operator](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-operator)
     - Installs the OpenShift GitOps Operator
-2. [GitOps Instance](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-instance)
+- [GitOps Instance](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-instance)
     - Deploys ArgoCD w/ custom health checks
     - Enables Progressive Syncs & ApplicationSets
     - Launches the Workshop from [Workshops](https://github.com/poc-examples/workshops/tree/main/charts)
-3. [Secrets Manager](https://github.com/poc-examples/secrets-manager-role)
+- [Secrets Manager](https://github.com/poc-examples/secrets-manager-role)
     - Sets up the namespace secrets-manager for secrets used by the overlaying workshop and cluster configuration.
     - Prepares the namespace for [External Secrets Kubernetes Provider](https://external-secrets.io/latest/provider/kubernetes/)
     - Prepares the namespace for [External Secrets HashiCorp Vault Provider](https://external-secrets.io/latest/provider/hashicorp-vault/)
-
-It uses the following terraform modules to build the infra:
-
-- [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
 
 ## Considerations
 
