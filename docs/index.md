@@ -6,7 +6,7 @@ These charts work together to provide a quick demonstration platform for preview
 
 ## Available Demos
 
-- [See Available WorkShops](https://github.com/poc-examples/workshops)
+- [Workshop Index](workshops/index.md)
 
 ## Quickstart Guide
 - [Prerequisites](getting-started/prerequisites.md)
