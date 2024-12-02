@@ -6,9 +6,8 @@ These charts work together to provide a quick demonstration platform for preview
 
 ## Available Demos
 
-- [Workshop Index](workshops/index.md)
+- [Available Workshops](workshops/index.md)
 
 ## Quickstart Guide
 - [Prerequisites](getting-started/prerequisites.md)
 - [Getting Started](getting-started/getting-started.md)
-- [Available Demos](installation.md)
