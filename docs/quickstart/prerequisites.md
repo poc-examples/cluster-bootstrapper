@@ -12,8 +12,4 @@ Currently, this bootstrapper is executed using make targets located in the root 
     - **[Podman](https://podman.io/docs/installation)**
     - **[Make](https://www.gnu.org/software/make/manual/make.html)**
 
-Once requirements are met you can pull the source files and build your cluster. See **[Getting Started](getting-started.md)**
-
-## References
-
-- 
+Next: Once requirements are met you can pull the source files and build your cluster. See **[Getting Started](getting-started.md)**
