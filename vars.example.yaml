@@ -6,7 +6,7 @@ openshift:
     cluster_name: rosa-rhoai-5
     version: 4.16.18
     region: us-east-2
-    workers: 4
+    workers: 7
 
   admin:
     credentials:
@@ -29,8 +29,8 @@ config:
   workshop:
     chart:
       enabled: true
-      name: base-keycloak
-      version: 0.1.10
+      name: rhoai-devex
+      version: 0.2.1
       repo: https://poc-examples.github.io/workshops
 
   # Optional: This section optional creates additional user defined secrets.
