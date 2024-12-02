@@ -26,7 +26,7 @@ We use SemVer for versioning. For the versions available, see the tags on this r
 
 ## Authors
 
-See also the list of contributors who participated in this project.
+See the list of contributors who participated in this project.
 
 ## License
 
