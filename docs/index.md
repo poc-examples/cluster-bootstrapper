@@ -12,7 +12,3 @@ These charts work together to provide a quick demonstration platform for preview
 - [Prerequisites](getting-started/prerequisites.md)
 - [Getting Started](getting-started/getting-started.md)
 - [Available Demos](installation.md)
-<!-- 
-A "Workshop" consists of:
-1. Workshop Chart: Configures the demonstration environment.
-2. Workflow Script: Works with the chart and guides the user through the demo. -->
