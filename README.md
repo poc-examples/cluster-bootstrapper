@@ -1,94 +1,84 @@
 # Quickstart Guide
 
-## What is this
+## What is Cluster Bootstrapper
 
-This is a github repo that sets up a running openshift cluster and launches a demo from [WorkShops Repo](https://github.com/poc-examples/workshops) using the rollout-controller helm chart at [rollout-controller helm chart](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller).
+Cluster Bootstrapper is a github repo that sets up a running openshift cluster and launches demos from [WorkShops Repo](https://github.com/poc-examples/workshops) using the rollout-controller helm chart at [rollout-controller helm chart](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller).
 
-It uses the following ansible repos to do the initial configuration:
+## Available WorkShops
 
-- [gitops role](https://github.com/poc-examples/ansible-roles)
-- [secrets-manager role](https://github.com/poc-examples/secrets-manager-role)
-
-It uses the following terraform modules to build the infra:
-
-- [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
-
-## Additional Documentation
-
-
+- [See Available WorkShops](https://github.com/poc-examples/workshops)
 
 ## Getting Started
 
-### Prerequisites
+1. Ensure the Pre-Requisites are met
 
-    - Podman Installed
-    - Linux
+- Podman Installed
+- Linux w/ make
 
-### Deployment Time Expectations
-
-- AWS ROSA - 40min cluster build + 15min workshops deployment
-- AWS HCP - Available in future updates
-- Azure - Available in future updates
-
-### Pick the Workshop Demo
-
-- [WorkShop Repo](https://github.com/poc-examples/workshops)
-
-### Clone the Repo
+2. Clone the Cluster Boostrapper
 
 ```
 git clone https://github.com/poc-examples/cluster-bootstrapper.git
 ```
 
-### Export Variables
+3. Set the following environment variables
+
+**ROSA_TOKEN**: Provided by [Cloud Console](https://console.redhat.com/openshift/token/show)
+**CLUSTER_USERNAME**: A username that can be used to log into the cluster
+    - *ie. `cluster-admin`*
+**CLUSTER_PASSWORD**: A password that can be used to log into the cluster
+    - Should be 14+ chars, upper and lower, with special characters
+**AWS_ACCESS_KEY_ID**: Programmatic Access Key w/ rights to provision OpenShift
+**AWS_SECRET_ACCESS_KEY**: Programmatic Secret for AWS Account
+
+4. Configure the WorkShop
+
+config.workshop
+
+5. Run Cluster Bootstrapper
 
 ```
-export AWS_ACCESS_KEY_ID=<your-key>
-export AWS_SECRET_ACCESS_KEY=<your-key>
+make podman_test_build
+make podman_test_configure
 ```
 
-### Configure vars.yaml
+6. Login to the cluster using [Cloud Console](https://console.redhat.com/openshift/cluster-list) in your cluster lists and follow the instructions for the workshop in the [WorkShops Repo](https://github.com/poc-examples/workshops)
 
-Open the var.example.yaml file and configure it to point to the workshop chart you want.  Then change the name to var.yaml
-
-```
-cp vars.example.yaml vars.yaml
-```
-
-In the vars.yaml file replace:
-- `<cluster_username>` with "cluster_admin"
-- `<cluster_password>` with a 14 character long complex password
-
-- `<offline-toke>` with you console token for rosa located at [Cloud Console](https://console.redhat.com/openshift/token/show)
-
-
-### Build the Demo
-
-Run the make script to deploy the demo.
-
-```
-make podman_deploy
-```
-
-### Login to the Demo Cluster
-
-Use the cloud console to get the link to your cluster.  The can be found at:
-
-[Cloud Console - Cluster List](https://console.redhat.com/openshift/cluster-list)
-
-Click on your cluster and click the open console button.
-
-### Destroy the Demo
+7. Clean Up
 
 When you're done with the demo you can destroy the cluster using:
 
 ```
-make podman_destroy
+make podman_test_cleanup
 ```
 
-## How It Works
+## Deployment Time Expectations
+
+- AWS ROSA - 40min cluster build + 15min workshops deployment
+- AWS HCP - Available in future updates
+- Azure - Available in future updates
+- ARO - Available in future updates
+
+## How Does Cluster Bootstrapper Work
 
 The Cluster Bootstrapper project automates the creation and management of OpenShift clusters in cloud environments using Terraform and Ansible. The process begins with Terraform, which provisions the required infrastructure. Ansible is then used to deploy GitOps tools, such as ArgoCD, to manage application lifecycle.
+
+It uses the following ansible collections to do the initial configuration:
+
+1. [GitOps Operator](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-operator)
+    - Installs the OpenShift GitOps Operator
+2. [GitOps Instance](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-instance)
+    - Deploys ArgoCD w/ custom health checks
+    - Enables Progressive Syncs & ApplicationSets
+    - Launches the Workshop from [Workshops](https://github.com/poc-examples/workshops/tree/main/charts)
+3. [Secrets Manager](https://github.com/poc-examples/secrets-manager-role)
+    - Sets up the namespace secrets-manager for secrets used by the overlaying workshop and cluster configuration.
+    - Prepares the namespace for [External Secrets Kubernetes Provider](https://external-secrets.io/latest/provider/kubernetes/)
+    - Prepares the namespace for [External Secrets HashiCorp Vault Provider](https://external-secrets.io/latest/provider/hashicorp-vault/)
+
+It uses the following terraform modules to build the infra:
+
+- [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
 
 ## Considerations
 
