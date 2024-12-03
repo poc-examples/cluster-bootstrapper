@@ -6,7 +6,7 @@ This guide will help you get started with the **Cluster Bootstrapper**.
 
 Check that the **[pre-requisites](prerequisites.md)** are met.
 
-## Usage
+## Usage 
 
 1. Clone the repository and move to the repository directory:
 
