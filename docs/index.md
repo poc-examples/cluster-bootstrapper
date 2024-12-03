@@ -10,7 +10,7 @@ These charts work together to provide a quick demonstration platform for preview
 
 ## Quickstart Guide
 - [Prerequisites](quickstart/prerequisites.md)
-- [Quick Start Guide](quickstart/quick-start.md)
+- [Quick Start Guide](quickstart/quickstart.md)
 
 ## Considerations
 
