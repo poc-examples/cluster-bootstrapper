@@ -31,6 +31,67 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
    >  * `CLUSTER_PASSWORD`: should be at least 14+ chars, upper and lower, with special characters. 
    >  * `ROSA_TOKEN`: can be obtained at [Red Hat Console](https://console.redhat.com/).
 
-3. Provide a Start-Up Helm Chart
+3. Open & Configure `config.yaml`:
 
-   - List of pre-made demo helm charts.  See [Workshops](https://github.com/poc-examples/workshops/blob/main/docs/README.md)
+   In the root of the repository is the workshop.yaml configuration file.  This configuration can use environmental variables or can be hard coded.  To use environment variables in the `workshop.yaml` file try to following syntax "{{ ENV_NAME }}".
+
+   The first block `openshift` configures the cluster.  You shouldn't need to adjust these parameters.
+
+   ```yaml
+   openshift:
+
+     aws:
+       type: rosa
+       cluster_name: demo-cluster-1 # Your cluster name
+       version: 4.16.18
+       region: us-east-2
+       workers: 7
+
+     admin:
+       credentials:
+         username: "{{ CLUSTER_USERNAME }}" # Uses Environment Variable CLUSTER_USERNAME
+         password: "{{ CLUSTER_PASSWORD }}" # Uses Environment Variable CLUSTER_PASSWORD
+
+     offline_token: "{{ ROSA_TOKEN }}" # Uses Environment Variable ROSA_TOKEN
+   ```
+
+   The second block `config` allows you to point to any available demo chart. See **[Available Workshops](../workshops/index.md)**.  Make sure `workshop.chart` is `enabled` and the rest of the settings match those seen in **[Available Workshops](../workshops/index.md)**.
+
+   ```yaml
+   config:
+
+     validate_certs: false
+
+     gitops:
+       enabled: true
+       channel: gitops-1.14
+       namespace: openshift-gitops
+
+     workshop:
+       chart:
+         enabled: true
+         name: rhoai-devex
+         version: 0.2.1
+         repo: https://poc-examples.github.io/workshops
+
+     secrets:
+       vault:
+         enabled: true
+       namespace: secrets-manager
+       pushSecrets: []
+   ```
+
+4. Build and Configure the Cluster
+
+   ```bash
+   make build
+   make configure
+   ```
+
+   Check the outputs for the `console url` to login directly to the cluster.  From Here you can follow the workflows in the workshop at **[Available Workshops](../workshops/index.md)**.
+
+   When you are finished with the demo the cluster can be cleaned up with:
+
+   ```bash
+   make cleanup
+   ```

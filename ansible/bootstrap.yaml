@@ -9,15 +9,12 @@
     - community.kubernetes
     - community.general
     - bootstrap.workshop
-  vars:
-    state: present
-  
   vars_files:
     - ../vars.yaml
 
   tasks:
 
-    - name: Get Terraform Outputs
+    - name: Fetch Terraform State
       ansible.builtin.shell:
         cmd: "terraform output -json"
         chdir: "../terraform"
@@ -25,20 +22,15 @@
       when:
         - openshift.terraform is not defined or openshift.terraform == true
 
-    - name: Convert JSON output to Dictionary
+    - name: Load Terraform State
       ansible.builtin.set_fact:
         terraform_outputs: "{{ tf_outputs.stdout | from_json }}"
       when:
         - openshift.terraform is not defined or openshift.terraform == true
 
-    - name: Set domain based on if domain is provided
+    - name: Fetch OpenShift Domain
       ansible.builtin.set_fact:
-        openshift_domain: >-
-          {{ 
-            openshift.domain 
-            if openshift.domain is defined and openshift.domain | length > 0
-            else terraform_outputs.domain.value 
-          }}
+        openshift_domain: "{{ openshift.domain | default(terraform_outputs.domain.value, true) }}"
 
     - name: Connecting to OpenShift - Can Take up to 7-15 Minutes
       community.okd.openshift_auth:
@@ -65,7 +57,7 @@
       retries: 40
       delay: 30
 
-    - name: Fetch the Ingress resource
+    - name: Fetch Cluster Ingress
       community.kubernetes.k8s_info:
         host: "https://api.{{ openshift_domain }}:6443"
         api_key: "{{ login.openshift_auth.api_key }}"
@@ -75,12 +67,10 @@
         name: cluster
       register: ingress_info
 
-    - name: Extract the domain from the Ingress resource
+    - name: Get Domain from Cluster Ingress
       set_fact:
         ingress_domain: "{{ ingress_info.resources[0].spec.domain | regex_replace('^apps\\.', '') }}"
 
-    ## RedHat Supported
-    ## Creates OpenShift GitOps Services With Cluster-Admin Permissions
     - name: Install OpenShift-GitOps Operator
       vars:
         api_url: "https://api.{{ openshift_domain }}:6443"
@@ -115,5 +105,13 @@
         validate_certs: "{{ config.validate_certs }}"
         secrets: "{{ config.secrets }}"
         rosa_token: "{{ openshift.offline_token }}"
+        aws_credentials:
+          AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
       ansible.builtin.import_role:
         name: secrets-manager
+
+    - name: Links 
+      debug:
+        msg: |
+          console url: https://console-openshift-console.{{ ingress_domain }}

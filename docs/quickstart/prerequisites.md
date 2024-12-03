@@ -8,11 +8,14 @@ Currently, this bootstrapper is executed using make targets located in the root 
 
 - Operating System: Linux
 - Available AWS Account
-    - User Account w/ Programmatic Access & Administrator Role
-- Rosa Token - Available from [console]()
-- Packages:
+    - User Account
+        - Account Keys w/ CLI Programmatic Access
+        - Bound to the Administrator Role
+- Rosa Token
+    - Available from **[console](https://console.redhat.com/openshift/token/show)**
+- Installed Packages:
     - **[Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)**
     - **[Podman](https://podman.io/docs/installation)**
     - **[Make](https://www.gnu.org/software/make/manual/make.html)**
 
-Next: Once requirements are met you can pull the source files and build your cluster. See **[Getting Started](getting-started.md)**
+Next: Once requirements are met you can pull the source files and build your cluster. See **[QuickStart Guide](quickstart.md)**
