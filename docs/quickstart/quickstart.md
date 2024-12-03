@@ -6,7 +6,7 @@ This guide will help you get started with the **Cluster Bootstrapper**.
 
 Check that the **[pre-requisites](prerequisites.md)** are met.
 
-## Usage Steps
+## Usage
 
 1. Clone the repository and move to the repository directory:
 
@@ -27,7 +27,9 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
    export AWS_SECRET_ACCESS_KEY="<PROVIDED_BY_AWS>"
    ```
 
-   > `CLUSTER_PASSWORD` should be at least 14+ chars, upper and lower, with special characters. You can obtain a `ROSA_TOKEN` at [Red Hat Console](https://console.redhat.com/).
+   > Note: 
+   >  * `CLUSTER_PASSWORD`: should be at least 14+ chars, upper and lower, with special characters. 
+   >  * `ROSA_TOKEN`: can be obtained at [Red Hat Console](https://console.redhat.com/).
 
 3. Provide a Start-Up Helm Chart
 
