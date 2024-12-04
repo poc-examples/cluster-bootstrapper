@@ -1,2 +1,0 @@
-# RHOAI-DevEx WorkShop
-
