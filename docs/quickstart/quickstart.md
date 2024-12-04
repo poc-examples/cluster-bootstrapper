@@ -8,7 +8,7 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
 
 ## Usage 
 
-1. Clone the repository and move to the repository directory:
+1. Clone the repository and change to the created directory:
 
    ```bash
    git clone https://github.com/poc-examples/cluster-bootstrapper.git

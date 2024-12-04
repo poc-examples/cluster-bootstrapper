@@ -1,6 +1,6 @@
 Cluster Bootstrapper is a GitHub repository designed to set up an OpenShift cluster and deploy demos from the [Workshops Respository](https://github.com/poc-examples/workshops).  These charts work together to provide an easy to deploy demonstration platform for previewing Red Hat OpenShift products.  
 
-Note: This is not intended for best-practice implementation.
+> Note: This is not intended for best-practice implementation.
 
 **Status: Pre-alpha**
 
