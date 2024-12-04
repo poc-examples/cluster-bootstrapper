@@ -8,12 +8,12 @@ These charts work together to provide an easy/quick demonstration platform for p
 
 ## Available Demos
 
-- [Catalog of Workshops](https://poc-examples.github.io/cluster-bootstrapper/workshops/index.md)
+- [Catalog of Workshops](https://poc-examples.github.io/cluster-bootstrapper/workshops/index.html)
 
 ## Quickstart Guide
-- [Prerequisites](https://poc-examples.github.io/cluster-bootstrapper/quickstart/prerequisites.md)
-- [Quick Start Guide](https://poc-examples.github.io/cluster-bootstrapper/quickstart/quickstart.md)
-- [Troubleshooting](https://poc-examples.github.io/cluster-bootstrapper/quickstart/troubleshooting.md)
+- [Prerequisites](https://poc-examples.github.io/cluster-bootstrapper/quickstart/prerequisites.html)
+- [Quick Start Guide](https://poc-examples.github.io/cluster-bootstrapper/quickstart/quickstart.html)
+- [Troubleshooting](https://poc-examples.github.io/cluster-bootstrapper/quickstart/troubleshooting.html)
 
 ## Deployment Time Expectations
 - AWS ROSA - 40min cluster build + 15min workshops deployment
