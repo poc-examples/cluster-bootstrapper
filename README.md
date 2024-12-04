@@ -1,82 +1,25 @@
-# Cluster Bootstrapper - Quickstart Guide
+# Cluster Bootstrapper
 
-## What is Cluster Bootstrapper
+Cluster Bootstrapper is a GitHub repository designed to set up an OpenShift cluster and deploy demos from the [Workshops Respository](https://github.com/poc-examples/workshops) which uses the [rollout-controller](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller) helm chart.
 
-Cluster Bootstrapper is a github repo that sets up a running openshift cluster and launches demos from [WorkShops Repo](https://github.com/poc-examples/workshops) using the rollout-controller helm chart at [rollout-controller helm chart](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller).
+These charts work together to provide an easy/quick demonstration platform for previewing Red Hat OpenShift products.  Note: This is not intended for best-practice implementation.
 
-## Available WorkShops
+**Status: Pre-alpha**
 
-- [See Available WorkShops](https://github.com/poc-examples/workshops)
+## Available Demos
 
-## Getting Started
+- [Catalog of Workshops](https://poc-examples.github.io/cluster-bootstrapper/workshops/index.md)
 
-1. Ensure the Pre-Requisites are met
-
-- Podman Installed
-- Linux w/ make
-
-2. Clone the Cluster Boostrapper
-
-```
-git clone https://github.com/poc-examples/cluster-bootstrapper.git
-```
-
-3. Set the following environment variables
-
-**ROSA_TOKEN**: Provided by [Cloud Console](https://console.redhat.com/openshift/token/show)
-**CLUSTER_USERNAME**: A username that can be used to log into the cluster
-    - *ie. `cluster-admin`*
-**CLUSTER_PASSWORD**: A password that can be used to log into the cluster
-    - Should be 14+ chars, upper and lower, with special characters
-**AWS_ACCESS_KEY_ID**: Programmatic Access Key w/ rights to provision OpenShift
-**AWS_SECRET_ACCESS_KEY**: Programmatic Secret for AWS Account
-
-4. Configure the WorkShop
-
-config.workshop
-
-5. Run Cluster Bootstrapper
-
-```
-make podman_test_build
-make podman_test_configure
-```
-
-6. Login to the cluster using [Cloud Console](https://console.redhat.com/openshift/cluster-list) in your cluster lists and follow the instructions for the workshop in the [WorkShops Repo](https://github.com/poc-examples/workshops)
-
-7. Clean Up
-
-When you're done with the demo you can destroy the cluster using:
-
-```
-make podman_test_cleanup
-```
+## Quickstart Guide
+- [Prerequisites](https://poc-examples.github.io/cluster-bootstrapper/quickstart/prerequisites.md)
+- [Quick Start Guide](https://poc-examples.github.io/cluster-bootstrapper/quickstart/quickstart.md)
+- [Troubleshooting](https://poc-examples.github.io/cluster-bootstrapper/quickstart/troubleshooting.md)
 
 ## Deployment Time Expectations
-
 - AWS ROSA - 40min cluster build + 15min workshops deployment
 - AWS HCP - Available in future updates
 - Azure - Available in future updates
 - ARO - Available in future updates
-
-## How Does Cluster Bootstrapper Work
-
-The Cluster Bootstrapper project automates the creation and management of OpenShift clusters in cloud environments using Terraform and Ansible. The process begins with Terraform, which provisions the required infrastructure. Ansible is then used to deploy GitOps tools, such as ArgoCD, to manage application lifecycle.
-
-Terraform References:
-- [terraform-clusters](https://github.com/poc-examples/terraform-clusters)
-
-Ansible References:
-- [GitOps Operator](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-operator)
-    - Installs the OpenShift GitOps Operator
-- [GitOps Instance](https://github.com/poc-examples/ansible-collections/tree/main/bootstrap/workshop/roles/gitops-instance)
-    - Deploys ArgoCD w/ custom health checks
-    - Enables Progressive Syncs & ApplicationSets
-    - Launches the Workshop from [Workshops](https://github.com/poc-examples/workshops/tree/main/charts)
-- [Secrets Manager](https://github.com/poc-examples/secrets-manager-role)
-    - Sets up the namespace secrets-manager for secrets used by the overlaying workshop and cluster configuration.
-    - Prepares the namespace for [External Secrets Kubernetes Provider](https://external-secrets.io/latest/provider/kubernetes/)
-    - Prepares the namespace for [External Secrets HashiCorp Vault Provider](https://external-secrets.io/latest/provider/hashicorp-vault/)
 
 ## Considerations
 
@@ -92,7 +35,7 @@ We use SemVer for versioning. For the versions available, see the tags on this r
 
 ## Authors
 
-See also the list of contributors who participated in this project.
+See the list of contributors who participated in this project.
 
 ## License
 
