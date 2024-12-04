@@ -33,7 +33,7 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
 
 3. Open & Configure `config.yaml`:
 
-   In the root of the repository is the workshop.yaml configuration file.  This configuration can use environmental variables or can be hard coded.  To use environment variables in the `workshop.yaml` file try to following syntax "{{ ENV_NAME }}".
+   In the root of the repository is the workshop.yaml configuration file.  This configuration can use environmental variables or can be hard coded.  To use environment variables in the `workshop.yaml` file try to following syntax "{% raw %}{{ ENV_NAME }}{% endraw %}".
 
    The first block `openshift` configures the cluster.  You shouldn't need to adjust these parameters.
 
@@ -49,10 +49,10 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
 
      admin:
        credentials:
-         username: "{{ CLUSTER_USERNAME }}" # Uses Environment Variable CLUSTER_USERNAME
-         password: "{{ CLUSTER_PASSWORD }}" # Uses Environment Variable CLUSTER_PASSWORD
+         username: "{% raw %}{{ CLUSTER_USERNAME }}{% endraw %}" # Uses Environment Variable CLUSTER_USERNAME
+         password: "{% raw %}{{ CLUSTER_PASSWORD }}{% endraw %}" # Uses Environment Variable CLUSTER_PASSWORD
 
-     offline_token: "{{ ROSA_TOKEN }}" # Uses Environment Variable ROSA_TOKEN
+     offline_token: "{% raw %}{{ ROSA_TOKEN }}{% endraw %}" # Uses Environment Variable ROSA_TOKEN
    ```
 
    The second block `config` allows you to point to any available demo chart. See **[Available Workshops](https://poc-examples.github.io/workshops/docs/available-workshops.html)**.  Make sure `workshop.chart` is `enabled` and the rest of the settings match those seen in **[Available Workshops](https://poc-examples.github.io/workshops/docs/available-workshops.html)**.
