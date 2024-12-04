@@ -55,7 +55,7 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
      offline_token: "{% raw %}{{ ROSA_TOKEN }}{% endraw %}" # Uses Environment Variable ROSA_TOKEN
    ```
 
-   The second block `config` allows you to point to any available demo chart. See **[Available Workshops](https://poc-examples.github.io/workshops/docs/available-workshops.html)**.  Make sure `workshop.chart` is `enabled` and the rest of the settings match those seen in **[Available Workshops](https://poc-examples.github.io/workshops/docs/available-workshops.html)**.
+   The second block `config` allows you to point to any available demo chart. See **[Available Workshops](https://poc-examples.github.io/workshops/)**.  Make sure `workshop.chart` is `enabled` and the rest of the settings match those seen in **[Available Workshops](https://poc-examples.github.io/workshops/)**.
 
    ```yaml
    config:
@@ -88,7 +88,7 @@ Check that the **[pre-requisites](prerequisites.md)** are met.
    make configure
    ```
 
-   Check the outputs for the `console url` to login directly to the cluster.  From Here you can follow the workflows in the workshop at **[Available Workshops](https://poc-examples.github.io/workshops/docs/available-workshops.html)**.
+   Check the outputs for the `console url` to login directly to the cluster.  From Here you can follow the workflows in the workshop at **[Available Workshops](https://poc-examples.github.io/workshops/)**.
 
    When you are finished with the demo the cluster can be cleaned up with:
 

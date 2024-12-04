@@ -6,7 +6,7 @@ These charts work together to provide an easy/quick demonstration platform for p
 
 ## Available Demos
 
-- [Catalog of Workshops](https://poc-examples.github.io/workshops/docs/available-workshops.html)
+- [Catalog of Workshops](https://poc-examples.github.io/workshops/)
 
 ## Quickstart Guide
 - [Prerequisites](quickstart/prerequisites.md)
