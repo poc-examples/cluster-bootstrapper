@@ -114,4 +114,4 @@
     - name: Links 
       debug:
         msg: |
-          console url: https://console-openshift-console.{{ ingress_domain }}
+          console url: https://console-openshift-console.apps.{{ ingress_domain }}

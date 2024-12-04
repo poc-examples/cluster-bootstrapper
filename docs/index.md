@@ -1,4 +1,4 @@
-Cluster Bootstrapper is a GitHub repository designed to set up an OpenShift cluster and deploy demos from the [Workshops Respository](https://github.com/poc-examples/workshops) that use the [rollout-controller](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller) helm chart.
+Cluster Bootstrapper is a GitHub repository designed to set up an OpenShift cluster and deploy demos from the [Workshops Respository](https://github.com/poc-examples/workshops) which uses the [rollout-controller](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller) helm chart.
 
 These charts work together to provide an easy/quick demonstration platform for previewing Red Hat OpenShift products.  Note: This is not intended for best-practice implementation.
 
