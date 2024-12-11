@@ -31,7 +31,7 @@ with open(vars_file, 'r') as file:
 
         template_variables = {
             'cloud': target_cloud,
-            'type': cluster[target_cloud]['type']
+            'type': cluster[target_cloud]['type'],
             'name': cluster[target_cloud]['name']
         }
 
