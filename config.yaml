@@ -1,43 +1,60 @@
 openshift:
 
-  aws:
-    type: rosa
-    # Name can only be 13 chars Max
-    cluster_name: rosa-rhoai-5
-    version: 4.16.18
-    region: us-east-2
-    workers: 7
-
-  admin:
-    credentials:
+  credentials:
+    admin:
       username: "{{ CLUSTER_USERNAME }}"
       # Should be 14+ chars, upper and lower, with special characters
       password: "{{ CLUSTER_PASSWORD }}"
+    users:
+      - username: "admin"
+        password: "{{ CLUSTER_PASSWORD }}"
+        group: "cluster-admin"
+      - username: "viewer"
+        password: "{{ CLUSTER_PASSWORD }}"
+        group: "cluster-admin"
 
-  # https://console.redhat.com/openshift/token/show
-  offline_token: "{{ ROSA_TOKEN }}"
+  clusters:
+    - local: 
+        name: local-cluster
+        api_url: 192.168.50.125:6443
+        domain: local.rollcage.io
+        validate_certs: false
+        version: 4.16.18
+        workshop:
+          chart:
+            enabled: true
+            name: rhoai-devex
+            version: 0.2.1
+            repo: https://poc-examples.github.io/workshops
+    - aws:
+        type: rosa # hcp|rosa
+        name: rosa-rhoai-5
+        version: 4.16.18
+        region: us-east-2
+        # https://console.redhat.com/openshift/token/show
+        offline_token: "{{ ROSA_TOKEN }}"
+        workshop:
+          chart:
+            enabled: false
 
-config:
 
-  validate_certs: false
 
-  gitops:
-    enabled: true
-    channel: gitops-1.14
-    namespace: openshift-gitops
 
-  workshop:
-    chart:
-      enabled: true
-      name: rhoai-devex
-      version: 0.2.1
-      repo: https://poc-examples.github.io/workshops
 
-  secrets:
-    vault:
-      enabled: true
-    namespace: secrets-manager
-
-    # Optional: This section optional creates additional user defined secrets.
-    # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
-    pushSecrets: []
+        # Spec'd to workshop or maybe minimum cluster
+        # This should be auto-adjusted
+        pools:
+          masters: 3
+          infra: 0
+          workers: 7
+        gitops:
+          enabled: true
+          channel: gitops-1.14
+          namespace: openshift-gitops
+        secrets:
+          vault:
+            enabled: true
+          namespace: secrets-manager
+          # Optional: This section optional creates additional user defined secrets.
+          # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
+          pushSecrets: []

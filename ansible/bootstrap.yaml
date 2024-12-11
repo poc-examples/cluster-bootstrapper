@@ -9,109 +9,129 @@
     - community.kubernetes
     - community.general
     - bootstrap.workshop
+    - bootstrap.clusters
   vars_files:
     - ../vars.yaml
 
   tasks:
 
-    - name: Fetch Terraform State
-      ansible.builtin.shell:
-        cmd: "terraform output -json"
-        chdir: "../terraform"
-      register: tf_outputs
-      when:
-        - openshift.terraform is not defined or openshift.terraform == true
+    - name: Ensure Local Clusters
+      block: 
 
-    - name: Load Terraform State
-      ansible.builtin.set_fact:
-        terraform_outputs: "{{ tf_outputs.stdout | from_json }}"
-      when:
-        - openshift.terraform is not defined or openshift.terraform == true
+        - name: Ensure Local Instance
+          vars:
+            ip_address: 
+            api_url: "{{ item.local }}"
+            token: "{{ login.openshift_auth.api_key }}"
+            validate_certs: "{{ config.validate_certs }}"
+            gitops: "{{ config.gitops }}"
+          ansible.builtin.include_role:
+            name: microk8s
+          when:
+            - openshift.local is defined
 
-    - name: Fetch OpenShift Domain
-      ansible.builtin.set_fact:
-        openshift_domain: "{{ openshift.domain | default(terraform_outputs.domain.value, true) }}"
+      loop: "{{ openshift.clusters }}"
+      loop_control:
+        loop_var: item
 
-    - name: Connecting to OpenShift - Can Take up to 7-15 Minutes
-      community.okd.openshift_auth:
-        host: "https://api.{{ openshift_domain }}:6443"
-        username: "{{ openshift.admin.credentials.username }}"
-        password: "{{ openshift.admin.credentials.password }}"
-        verify_ssl: false
-      register: login
-      retries: 45
-      delay: 30
+    # - name: Fetch Terraform State
+    #   ansible.builtin.shell:
+    #     cmd: "terraform output -json"
+    #     chdir: "../terraform"
+    #   register: tf_outputs
+    #   when:
+    #     - openshift.terraform is not defined or openshift.terraform == true
 
-    - name: Waiting for OpenShift Healthy State - Can Take up to 12-15 Minutes
-      community.kubernetes.k8s_info:
-        host: "https://api.{{ openshift_domain }}:6443"
-        api_key: "{{ login.openshift_auth.api_key }}"
-        validate_certs: "{{ config.validate_certs }}"
-        api_version: v1
-        kind: Pod
-      register: pod_info
-      until:
-        - pod_info.resources is defined
-        - pod_info.resources | length > 0
-        - pod_info.resources | selectattr('status.phase', 'equalto', 'Pending') | length == 0
-      retries: 40
-      delay: 30
+    # - name: Load Terraform State
+    #   ansible.builtin.set_fact:
+    #     terraform_outputs: "{{ tf_outputs.stdout | from_json }}"
+    #   when:
+    #     - openshift.terraform is not defined or openshift.terraform == true
 
-    - name: Fetch Cluster Ingress
-      community.kubernetes.k8s_info:
-        host: "https://api.{{ openshift_domain }}:6443"
-        api_key: "{{ login.openshift_auth.api_key }}"
-        validate_certs: "{{ config.validate_certs }}"
-        api_version: config.openshift.io/v1
-        kind: Ingress
-        name: cluster
-      register: ingress_info
+    # - name: Fetch OpenShift Domain
+    #   ansible.builtin.set_fact:
+    #     openshift_domain: "{{ openshift.domain | default(terraform_outputs.domain.value, true) }}"
 
-    - name: Get Domain from Cluster Ingress
-      set_fact:
-        ingress_domain: "{{ ingress_info.resources[0].spec.domain | regex_replace('^apps\\.', '') }}"
+    # - name: Connecting to OpenShift - Can Take up to 7-15 Minutes
+    #   community.okd.openshift_auth:
+    #     host: "https://api.{{ openshift_domain }}:6443"
+    #     username: "{{ openshift.admin.credentials.username }}"
+    #     password: "{{ openshift.admin.credentials.password }}"
+    #     verify_ssl: false
+    #   register: login
+    #   retries: 45
+    #   delay: 30
 
-    - name: Install OpenShift-GitOps Operator
-      vars:
-        api_url: "https://api.{{ openshift_domain }}:6443"
-        token: "{{ login.openshift_auth.api_key }}"
-        validate_certs: "{{ config.validate_certs }}"
-        gitops: "{{ config.gitops }}"
-      ansible.builtin.include_role:
-        name: gitops-operator
-      when:
-        - config.gitops.enabled is defined
-        - config.gitops.enabled is true
+    # - name: Waiting for OpenShift Healthy State - Can Take up to 12-15 Minutes
+    #   community.kubernetes.k8s_info:
+    #     host: "https://api.{{ openshift_domain }}:6443"
+    #     api_key: "{{ login.openshift_auth.api_key }}"
+    #     validate_certs: "{{ config.validate_certs }}"
+    #     api_version: v1
+    #     kind: Pod
+    #   register: pod_info
+    #   until:
+    #     - pod_info.resources is defined
+    #     - pod_info.resources | length > 0
+    #     - pod_info.resources | selectattr('status.phase', 'equalto', 'Pending') | length == 0
+    #   retries: 40
+    #   delay: 30
 
-    - name: Configure OpenShift-GitOps Instance
-      vars:
-        domain: "{{ ingress_domain }}"
-        api_url: "https://api.{{ openshift_domain }}:6443"
-        token: "{{ login.openshift_auth.api_key }}"
-        validate_certs: "{{ config.validate_certs }}"
-        gitops: "{{ config.gitops }}"
-        workshop: "{{ config.workshop }}"
-        cluster: "{{ openshift.aws }}"
-      ansible.builtin.include_role:
-        name: gitops-instance
-      when:
-        - config.gitops.enabled is defined
-        - config.gitops.enabled is true
+    # - name: Fetch Cluster Ingress
+    #   community.kubernetes.k8s_info:
+    #     host: "https://api.{{ openshift_domain }}:6443"
+    #     api_key: "{{ login.openshift_auth.api_key }}"
+    #     validate_certs: "{{ config.validate_certs }}"
+    #     api_version: config.openshift.io/v1
+    #     kind: Ingress
+    #     name: cluster
+    #   register: ingress_info
 
-    - name: Secrets Management
-      vars:
-        api_url: "https://api.{{ openshift_domain }}:6443"
-        token: "{{ login.openshift_auth.api_key }}"
-        validate_certs: "{{ config.validate_certs }}"
-        secrets: "{{ config.secrets }}"
-        rosa_token: "{{ openshift.offline_token }}"
-        aws_credentials:
-          AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
-      ansible.builtin.import_role:
-        name: secrets-manager
+    # - name: Get Domain from Cluster Ingress
+    #   set_fact:
+    #     ingress_domain: "{{ ingress_info.resources[0].spec.domain | regex_replace('^apps\\.', '') }}"
 
-    - name: Links 
-      debug:
-        msg: |
-          console url: https://console-openshift-console.apps.{{ ingress_domain }}
+    # - name: Install OpenShift-GitOps Operator
+    #   vars:
+    #     api_url: "https://api.{{ openshift_domain }}:6443"
+    #     token: "{{ login.openshift_auth.api_key }}"
+    #     validate_certs: "{{ config.validate_certs }}"
+    #     gitops: "{{ config.gitops }}"
+    #   ansible.builtin.include_role:
+    #     name: gitops-operator
+    #   when:
+    #     - config.gitops.enabled is defined
+    #     - config.gitops.enabled is true
+
+    # - name: Configure OpenShift-GitOps Instance
+    #   vars:
+    #     domain: "{{ ingress_domain }}"
+    #     api_url: "https://api.{{ openshift_domain }}:6443"
+    #     token: "{{ login.openshift_auth.api_key }}"
+    #     validate_certs: "{{ config.validate_certs }}"
+    #     gitops: "{{ config.gitops }}"
+    #     workshop: "{{ config.workshop }}"
+    #     cluster: "{{ openshift.aws }}"
+    #   ansible.builtin.include_role:
+    #     name: gitops-instance
+    #   when:
+    #     - config.gitops.enabled is defined
+    #     - config.gitops.enabled is true
+
+    # - name: Secrets Management
+    #   vars:
+    #     api_url: "https://api.{{ openshift_domain }}:6443"
+    #     token: "{{ login.openshift_auth.api_key }}"
+    #     validate_certs: "{{ config.validate_certs }}"
+    #     secrets: "{{ config.secrets }}"
+    #     rosa_token: "{{ openshift.offline_token }}"
+    #     aws_credentials:
+    #       AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+    #       AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+    #   ansible.builtin.import_role:
+    #     name: secrets-manager
+
+    # - name: Links 
+    #   debug:
+    #     msg: |
+    #       console url: https://console-openshift-console.apps.{{ ingress_domain }}

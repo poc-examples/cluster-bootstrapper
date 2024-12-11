@@ -7,6 +7,11 @@ collections:
     type: git
     version: main
 
+  - name: bootstrap.clusters
+    source: https://github.com/poc-examples/ansible-collections.git#/bootstrap/clusters
+    type: git
+    version: main
+
   - name: community.kubernetes
     source: https://galaxy.ansible.com
 
