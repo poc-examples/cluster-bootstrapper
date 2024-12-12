@@ -20,19 +20,20 @@
 
         - name: Ensure Local Instance
           vars:
-            ip_address: 
-            api_url: "{{ item.local }}"
-            token: "{{ login.openshift_auth.api_key }}"
-            validate_certs: "{{ config.validate_certs }}"
-            gitops: "{{ config.gitops }}"
+            ansible_host: "ip_address"
+            ansible_user: "user"
+            ansible_ssh_pass: "pass"
+            ansible_become_password: "pass"
+            ansible_become: true
+            ansible_become_method: sudo
+            ansible_become_user: root
           ansible.builtin.include_role:
             name: microk8s
           when:
-            - openshift.local is defined
-
-      loop: "{{ openshift.clusters }}"
-      loop_control:
-        loop_var: item
+            - item.local is defined
+          loop: "{{ openshift.clusters }}"
+          loop_control:
+            loop_var: item
 
     # - name: Fetch Terraform State
     #   ansible.builtin.shell:
