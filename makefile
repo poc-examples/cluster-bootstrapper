@@ -20,28 +20,10 @@ terraform_plan:
 
 ansible_setup: 
 	@ansible-galaxy install -r ansible/requirements.yaml --force
-	@ansible-playbook ansible/bootstrap.yaml
+	@ansible-playbook ansible/bootstrap.yaml -i ansible/inventory.yaml
 
 terraform_destroy: 
 	@terraform -chdir=terraform destroy $(AUTO_APPROVE)
-
-local:
-	@podman run --rm -it \
-		-v $(shell pwd)/:/usr/src/app:z \
-		-w /usr/src/app \
-		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
-		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
-		-e ROSA_TOKEN=${ROSA_TOKEN} \
-		docker.io/cengleby86/bootstrapper:latest \
-		bash -c "\
-			j2 --format=env config.yaml > vars.yaml \
-			&& echo -e '\\nJinja2 template rendered\\n' \
-			&& make preflight_checks \
-			&& make render_templates \
-			&& make ansible_setup \
-		"
 
 build:
 	@podman run --rm -it \
