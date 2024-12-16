@@ -14,47 +14,26 @@ openshift:
         group: "cluster-admin"
 
   clusters:
-    - local: 
-        name: local-cluster
-        api_url: 192.168.50.125:6443
-        domain: local.rollcage.io
-        validate_certs: false
-        version: 4.16.18
-        workshop:
-          chart:
-            enabled: true
-            name: rhoai-devex
-            version: 0.2.1
-            repo: https://poc-examples.github.io/workshops
-    - aws:
-        type: rosa # hcp|rosa
-        name: rosa-rhoai-5
-        version: 4.16.18
-        region: us-east-2
-        # https://console.redhat.com/openshift/token/show
-        offline_token: "{{ ROSA_TOKEN }}"
-        workshop:
-          chart:
-            enabled: false
 
-
-
-
-
-        # Spec'd to workshop or maybe minimum cluster
-        # This should be auto-adjusted
-        pools:
-          masters: 3
-          infra: 0
-          workers: 7
-        gitops:
+    - name: local-machine
+      type: local # local, hcp, rosa, aro
+      domain: local-machine.domain.io
+      create: false
+      validate_certs: false
+      workshop:
+        chart:
           enabled: true
-          channel: gitops-1.14
-          namespace: openshift-gitops
-        secrets:
-          vault:
-            enabled: true
-          namespace: secrets-manager
-          # Optional: This section optional creates additional user defined secrets.
-          # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
-          pushSecrets: []
+          name: rhoai-devex
+          version: 0.2.3
+          repo: https://poc-examples.github.io/workshops
+      gitops:
+        enabled: true
+        channel: gitops-1.14
+        namespace: openshift-gitops
+      secrets:
+        vault:
+          enabled: true
+        namespace: secrets-manager
+        # Optional: This section optional creates additional user defined secrets.
+        # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
+        pushSecrets: []

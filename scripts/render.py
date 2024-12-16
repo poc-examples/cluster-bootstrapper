@@ -4,6 +4,7 @@ import yaml
 
 vars_file = './vars.yaml'
 terraform_dir = './terraform'
+output_inventory_file = './ansible/inventory.yaml'
 
 def render_template(template_name, output_name, variables):
     env = Environment(
@@ -14,25 +15,33 @@ def render_template(template_name, output_name, variables):
     with open(output_name, 'w') as output_file:
         output_file.write(template.render(variables))
 
+inventory = {
+    "localmachines": {
+        "hosts": {}
+    }
+}
+
 with open(vars_file, 'r') as file:
     config = yaml.safe_load(file)
 
     for cluster in config["openshift"]["clusters"]:
 
-        target_cloud = ""
-        if "local" in cluster.keys():
-            continue
+        target_cloud = "local"
+        if "type" in cluster.keys():
 
-        if "aws" in cluster.keys():
-            target_cloud = "aws"
+            if "hcp" in cluster["type"]:
+                target_cloud = "aws"
 
-        if "azure" in cluster.keys():
-            target_cloud = "azure"
+            if "rosa" in cluster["type"]:
+                target_cloud = "aws"
+
+            if "aro" in cluster["type"]:
+                target_cloud = "azure"
 
         template_variables = {
             'cloud': target_cloud,
-            'type': cluster[target_cloud]['type'],
-            'name': cluster[target_cloud]['name']
+            'type': cluster['type'] if 'type' in cluster else 'local',
+            'name': cluster['name']
         }
 
         # Process each .j2 file in the specified use-cases directory

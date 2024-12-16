@@ -15,6 +15,9 @@ collections:
   - name: community.kubernetes
     source: https://galaxy.ansible.com
 
+  - name: community.libvirt
+    source: https://galaxy.ansible.com
+
   - name: kubernetes.core
     source: https://galaxy.ansible.com
 
