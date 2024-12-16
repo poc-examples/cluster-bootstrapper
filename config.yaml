@@ -24,7 +24,7 @@ openshift:
         chart:
           enabled: true
           name: rhoai-devex
-          version: 0.2.1
+          version: 0.2.3
           repo: https://poc-examples.github.io/workshops
       gitops:
         enabled: true
