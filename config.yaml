@@ -15,16 +15,23 @@ openshift:
 
   clusters:
 
-    - name: local-machine
-      type: local # local, hcp, rosa, aro
-      domain: local-machine.domain.io
-      create: false
+    - name: tekton-demo-1
+      type: rosa # local, hcp, rosa, aro
+      version: 4.16
+      compute:
+        workers: 3
+      providerCredentials:
+        aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "us-east-2"
+        rosa_token: "{{ ROSA_TOKEN }}"
+      create: true
       validate_certs: false
       workshop:
         chart:
           enabled: true
-          name: rhoai-devex
-          version: 0.2.3
+          name: base-keycloak
+          version: 0.1.10
           repo: https://poc-examples.github.io/workshops
       gitops:
         enabled: true

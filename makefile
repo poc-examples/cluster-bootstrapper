@@ -43,6 +43,24 @@ build:
 			&& make terraform_apply \
 		"
 
+plan:
+	@podman run --rm -it \
+		-v $(shell pwd)/:/usr/src/app:z \
+		-w /usr/src/app \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
+		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
+		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		docker.io/cengleby86/bootstrapper:latest \
+		bash -c "\
+			j2 --format=env config.yaml > vars.yaml \
+			&& echo -e '\\nJinja2 template rendered\\n' \
+			&& make preflight_checks \
+			&& make render_templates \
+			&& make terraform_plan \
+		"
+
 configure:
 	@podman run --rm -it \
 		-v $(shell pwd)/:/usr/src/app:z \

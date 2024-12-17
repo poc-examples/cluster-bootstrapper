@@ -1,11 +1,12 @@
+# Generated Vars Files
 vars.yaml*
-*/manifests/*.yaml
+
+# Generated Cosign Keys
 *.pem
-.terraform*
-*.tfstate
-terraform.tfplan
-terraform.tfstate.backup
-main.tf
-venv
-test-vars.yaml
-ansible/inventory.yaml
+
+# Ignore everything in the terraform 
+# folder except the main files
+terraform/*
+!terraform/providers.tf
+!terraform/outputs.tf
+!terraform/main.tf.j2

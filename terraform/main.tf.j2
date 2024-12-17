@@ -1,11 +1,63 @@
-module "openshift_cluster" {
-    source = "github.com/poc-examples/terraform-clusters//modules/{{ cloud }}/{{ type }}"
+terraform {
+    required_providers {
+        aws = {
+            source  = "hashicorp/aws"
+            version = ">= 4.20.0"
+        }
+        rhcs = {
+            version = ">= 1.6.0"
+            source  = "terraform-redhat/rhcs"
+        }
+    }
+}
 
-    region                  = local.cluster_config.region
-    cluster_name            = local.cluster_config.cluster_name
-    offline_token           = local.config.openshift.offline_token
-    admin_credentials       = local.config.openshift.admin.credentials
-    worker_node_replicas    = local.cluster_config.workers
-    rosa_openshift_version  = local.cluster_config.version
+locals {
+    config = yamldecode(file("../vars.yaml"))
+}
+
+{% for instance in clusters -%}
+{% if instance.cluster.create is true -%}
+provider "rhcs" {
+    alias = "{{ instance.name }}"
+    token = "{{ instance.cluster.providerCredentials.rosa_token }}"
+    url   = "https://api.openshift.com"
+}
+
+provider "aws" {
+    alias = "{{ instance.name }}"
+    region = "{{ instance.cluster.providerCredentials.region }}"
+    access_key = "{{ instance.cluster.providerCredentials.aws_access_key_id }}"
+    secret_key = "{{ instance.cluster.providerCredentials.aws_secret_access_key }}"
+    ignore_tags {
+        key_prefixes = ["kubernetes.io/"]
+    }
+}
+
+module "{{ instance.name }}" {
+    source = "github.com/poc-examples/terraform-clusters//modules/{{ instance.cloud }}/{{ instance.type }}"
+
+    region                  = "{{ instance.cluster.providerCredentials.region }}"
+    cluster_name            = "{{ instance.name }}"
+    offline_token           = "{{ instance.cluster.providerCredentials.rosa_token }}"
+    admin_credentials       = local.config.openshift.credentials.admin
+    worker_node_replicas    = {{ instance.cluster.compute.workers }}
+    rosa_openshift_version  = "{{ instance.cluster.version }}"
+
+    providers = {
+        aws  = aws.{{ instance.name }}
+        rhcs = rhcs.{{ instance.name }}
+    }
 
 }
+
+output "{{ instance.name }}_api_url" {
+    value       = module.{{ instance.name }}.api_url
+    sensitive   = true
+}
+
+output "{{ instance.name }}_domain" {
+    value       = module.{{ instance.name }}.domain
+    sensitive   = true
+}
+{% endif %}
+{% endfor %}
