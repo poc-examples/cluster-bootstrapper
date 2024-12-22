@@ -9,7 +9,6 @@
     - community.kubernetes
     - community.general
     - bootstrap.workshop
-    - bootstrap.clusters
   vars_files:
     - ../vars.yaml
 

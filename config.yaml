@@ -30,8 +30,8 @@ openshift:
       workshop:
         chart:
           enabled: true
-          name: base-keycloak
-          version: 0.1.10
+          name: pipelines-as-code
+          version: 0.1.2
           repo: https://poc-examples.github.io/workshops
       gitops:
         enabled: true
