@@ -8,18 +8,18 @@ openshift:
     users:
       - username: "admin"
         password: "{{ CLUSTER_PASSWORD }}"
-        group: "cluster-admin"
+        group: "cluster-admins"
       - username: "viewer"
         password: "{{ CLUSTER_PASSWORD }}"
-        group: "cluster-admin"
+        group: "cluster-admins"
 
   clusters:
 
-    - name: tekton-demo-1
+    - name: mt-demo-1
       type: rosa # local, hcp, rosa, aro
       version: 4.17.4
       compute:
-        workers: 3
+        workers: 6
       providerCredentials:
         aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
         aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
@@ -30,8 +30,8 @@ openshift:
       workshop:
         chart:
           enabled: true
-          name: pipelines-as-code
-          version: 0.1.2
+          name: gitlab-argocd-cicd
+          version: 0.0.3
           repo: https://poc-examples.github.io/workshops
       gitops:
         enabled: true
