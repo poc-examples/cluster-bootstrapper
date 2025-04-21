@@ -13,9 +13,12 @@ openshift:
         password: "{{ CLUSTER_PASSWORD }}"
         group: "cluster-admins"
 
+  branding:
+    name: Generic Financial Firm
+
   clusters:
 
-    - name: mt-demo-1
+    - name: generic-demo-1
       type: rosa # local, hcp, rosa, aro
       version: 4.17.4
       compute:
