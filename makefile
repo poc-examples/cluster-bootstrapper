@@ -34,6 +34,7 @@ build:
 		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
 		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
 		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		-e VAULT_TOKEN=${VAULT_TOKEN} \
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
 			j2 --format=env config.yaml > vars.yaml \
@@ -52,6 +53,7 @@ plan:
 		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
 		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
 		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		-e VAULT_TOKEN=${VAULT_TOKEN} \
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
 			j2 --format=env config.yaml > vars.yaml \
@@ -70,6 +72,7 @@ configure:
 		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
 		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
 		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		-e VAULT_TOKEN=${VAULT_TOKEN} \
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
 			j2 --format=env config.yaml > vars.yaml \
@@ -88,6 +91,7 @@ cleanup:
 		-e CLUSTER_USERNAME=${CLUSTER_USERNAME} \
 		-e CLUSTER_PASSWORD=$(CLUSTER_PASSWORD) \
 		-e ROSA_TOKEN=${ROSA_TOKEN} \
+		-e VAULT_TOKEN=${VAULT_TOKEN} \
 		docker.io/cengleby86/bootstrapper:latest \
 		bash -c "\
 			j2 --format=env config.yaml > vars.yaml \

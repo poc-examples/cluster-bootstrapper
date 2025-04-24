@@ -10,6 +10,11 @@ openshift:
         password: "{{ CLUSTER_PASSWORD }}"
         group: "cluster-admins"
 
+    # Will Adjust Later for OIDC
+    # But currently need a fast solution
+    vault:
+      token: "{{ VAULT_TOKEN }}"
+
   clusters:
 
     - name: service-cbe-1
