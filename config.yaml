@@ -32,7 +32,7 @@ openshift:
         chart:
           enabled: true
           name: test
-          version: 0.0.1
+          version: 0.0.3
           repo: https://poc-examples.github.io/workshops
           settings:
             role: workload
@@ -54,7 +54,7 @@ openshift:
         chart:
           enabled: true
           name: services-cluster
-          version: 0.0.3
+          version: 0.0.5
           repo: https://poc-examples.github.io/workshops
           settings:
             role: shared
