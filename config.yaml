@@ -31,31 +31,31 @@ openshift:
       workshop:
         chart:
           enabled: true
-          name: test
-          version: 0.0.3
+          name: services-cluster
+          version: 0.0.7
           repo: https://poc-examples.github.io/workshops
           settings:
             role: workload
             stage: dev
-        sharedClusterRef: shared-cbe-1
+        # sharedClusterRef: shared-cbe-1
 
-    - name: shared-cbe-1
-      type: rosa # local, hcp, rosa, aro
-      version: 4.17.4
-      create: true
-      compute:
-        workers: 6
-      providerCredentials:
-        aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
-        aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
-        region: "us-east-2"
-        rosa_token: "{{ ROSA_TOKEN }}"
-      workshop:
-        chart:
-          enabled: true
-          name: services-cluster
-          version: 0.0.5
-          repo: https://poc-examples.github.io/workshops
-          settings:
-            role: shared
-            stage: prod
+    # - name: shared-cbe-1
+    #   type: rosa # local, hcp, rosa, aro
+    #   version: 4.17.4
+    #   create: true
+    #   compute:
+    #     workers: 6
+    #   providerCredentials:
+    #     aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
+    #     aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+    #     region: "us-east-2"
+    #     rosa_token: "{{ ROSA_TOKEN }}"
+    #   workshop:
+    #     chart:
+    #       enabled: true
+    #       name: services-cluster
+    #       version: 0.0.5
+    #       repo: https://poc-examples.github.io/workshops
+    #       settings:
+    #         role: shared
+    #         stage: prod

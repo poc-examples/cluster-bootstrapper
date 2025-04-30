@@ -1,46 +1,52 @@
 # Cluster Bootstrapper
 
-Cluster Bootstrapper is a GitHub repository designed to set up an OpenShift cluster and deploy demos from the [Workshops Respository](https://github.com/poc-examples/workshops) which uses the [rollout-controller](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller) helm chart.
+Cluster Bootstrapper is a multi-cluster orchestration tool designed for spinning up OpenShift-based demo environments([Workshops Respository](https://github.com/poc-examples/workshops)) that simulate real-world topologies. It automates infrastructure creation, GitOps setup([rollout-controller](https://github.com/poc-examples/charts/tree/main/charts/rollout-controller)), shared services bootstrapping (e.g. Vault, ArgoCD, DevHub), and workload deployment across dev/test/prod or hybrid cloud setups.
 
-These charts work together to provide an easy/quick demonstration platform for previewing Red Hat OpenShift products.  Note: This is not intended for best-practice implementation.
+>⚠️ Not production-grade. 
+> This is a rapid prototyping and enablement tool for internal teams and POCs. Built to show what's possible, not how to do it in production.
 
-**Status: Pre-alpha**
+## What It Does
+
+- Deploys one or more OpenShift clusters using Terraform (ROSA, HCP, ARO, or local)
+- Bootstraps shared services (Vault, ArgoCD, DevHub, External Secrets)
+- Configures per-cluster workloads using Helm ApplicationSets
+- Syncs secrets and config across clusters via a shared Vault
+- Supports over-the-shoulder enablement workflows for teams to experiment
 
 ## Available Demos
 
-- [Catalog of Workshops](https://poc-examples.github.io/cluster-bootstrapper/workshops/index.html)
+- [Catalog of Workshops](https://poc-examples.github.io/cluster-bootstrapper/workshops/index.html) (Backed by rollout-controller chart)
 
 ## Quickstart Guide
+- [Architecture](https://poc-examples.github.io/cluster-bootstrapper/quickstart/architecture.html)
 - [Prerequisites](https://poc-examples.github.io/cluster-bootstrapper/quickstart/prerequisites.html)
-- [Quick Start Guide](https://poc-examples.github.io/cluster-bootstrapper/quickstart/quickstart.html)
+- [Quickstart Guide](https://poc-examples.github.io/cluster-bootstrapper/quickstart/quickstart.html)
 - [Troubleshooting](https://poc-examples.github.io/cluster-bootstrapper/quickstart/troubleshooting.html)
 
 ## Deployment Time Expectations
-- AWS ROSA - 40min cluster build + 15min workshops deployment
-- AWS HCP - Available in future updates
-- Azure - Available in future updates
-- ARO - Available in future updates
+| Platform | Cluster Build | Workload Deploy |
+| -------- | ------------- | --------------- |
+| AWS ROSA | ~40 min       | ~15 min         | 
+| AWS HCP  | Coming Soon   |                 |
+| Azure/ARO| Coming Soon   |                 |
+| ARO      | Coming Soon   |                 |
 
 ## Considerations
 
-For live systems, ensure you have robust IAM policies and access controls in place to secure the cloud secret stores.
+If adapting this for real environments, you’ll need to implement:
+- Secure Secrets Management
+- Identity & access controls
+- Vault unsealing strategy (if not using dev mode)
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/poc-examples/cluster-bootstrapper/blob/main/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+See [CONTRIBUTING.md](https://github.com/poc-examples/cluster-bootstrapper/blob/main/CONTRIBUTING.md) for guidelines.
 
 ## Versioning
 
-We use SemVer for versioning. For the versions available, see the tags on this repository.
+We use [SemVer](https://semver.org/ ). Tags reflect each release.
 
-## Authors
+## Authors & Acknowledgments
 
 See the list of contributors who participated in this project.
-
-## License
-
-This project is licensed under the LICENSE.md file for details.
-
-## Acknowledgments
-
-Thanks to anyone whose code was used Inspiration.
+Thanks to all upstream charts and tools integrated into this platform.

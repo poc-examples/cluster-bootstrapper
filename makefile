@@ -78,7 +78,6 @@ configure:
 			j2 --format=env config.yaml > vars.yaml \
 			&& echo -e '\\nJinja2 template rendered\\n' \
 			&& make preflight_checks \
-			&& make render_templates \
 			&& make ansible_setup \
 		"
 
