@@ -1,48 +1,41 @@
 openshift:
 
-  azure:
-    type: aro
-    # Name can only be 13 chars
-    cluster_name: aro-rhoai-test
-    version: 4.16.13
-    region: us-east-2
-    workers: 6
-
-  admin:
-    credentials:
+  credentials:
+    admin:
       username: "{{ CLUSTER_USERNAME }}"
       # Should be 14+ chars, upper and lower, with special characters
       password: "{{ CLUSTER_PASSWORD }}"
+    users:
+      - username: "admin"
+        password: "{{ CLUSTER_PASSWORD }}"
+        group: "cluster-admins"
 
-  # https://console.redhat.com/openshift/token/show
-  # offline_token: "{{ ROSA_TOKEN }}"
+    # Will Adjust Later for OIDC
+    # But currently need a fast solution
+    vault:
+      token: "{{ VAULT_TOKEN }}"
 
-config:
+  clusters:
 
-  validate_certs: false
-
-  gitops:
-    enabled: true
-    channel: gitops-1.14
-    namespace: openshift-gitops
-
-  workshop:
-    chart:
-      enabled: true
-      name: rhoai-devex
-      version: 0.1.45
-      repo: https://poc-examples.github.io/workshops
-
-  # Optional: This section optional creates additional user defined secrets.
-  # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
-  secrets:
-    namespace: secrets-manager
-    pushSecrets: []
-
-      # - name: example-secret
-      #   secrets:
-      #     AWS_ACCESS_KEY_ID: <access_key_id>
-      #     AWS_DEFAULT_REGION: us-east-2
-      #     AWS_SECRET_ACCESS_KEY: <secret_access_key>
-      #     AWS_S3_BUCKET: <bucket>
-      #     AWS_S3_ENDPOINT: https://s3.us-east-2.amazonaws.com
+    - name: aro-cbe-1
+      type: aro # local, hcp, rosa, aro
+      version: 4.17.4
+      create: true
+      compute:
+        workers: 6
+      providerCredentials:
+        client_id: "{{ CLIENT_ID }}"
+        client_secret: "{{ CLIENT_SECRET }}"
+        subscription_id: "{{ SUBSCRIPTION_ID }}"
+        tenant_id: "{{ TENANT_ID }}"
+        resource_group_name: "{{ RESOURCE_GROUP_NAME }}"
+        location: "{{ LOCATION }}"
+      workshop:
+        chart:
+          enabled: true
+          name: services-cluster
+          version: 0.0.5
+          repo: https://poc-examples.github.io/workshops
+          settings:
+            role: shared
+            stage: prod

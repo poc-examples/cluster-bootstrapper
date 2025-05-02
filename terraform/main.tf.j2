@@ -1,5 +1,23 @@
+{%- set ns = namespace() -%}
+{%- set ns.azure = False -%}
+{%- set ns.aws = False -%}
+
+{%- for cluster in clusters -%}
+    {%- if cluster.cloud == "azure" -%}
+        {%- set ns.aro = True -%}
+    {%- endif -%}
+    {%- if cluster.cloud == "aws" -%}
+        {%- set ns.aws = True -%}
+    {%- endif -%}
+{%- endfor -%}
+
+locals {
+    config = yamldecode(file("../vars.yaml"))
+}
+
 terraform {
     required_providers {
+        {%- if ns.aws %}
         aws = {
             source  = "hashicorp/aws"
             version = ">= 4.20.0"
@@ -8,48 +26,118 @@ terraform {
             version = ">= 1.6.0"
             source  = "terraform-redhat/rhcs"
         }
+        {%- endif %}
+        {%- if ns.aro %}
+        azurerm = {
+            source  = "hashicorp/azurerm"
+            version = "~>4.27.0"
+        }
+        azuread = {
+            source = "hashicorp/azuread"
+            version = "3.3.0"
+        }
+        {%- endif %}
     }
 }
 
-locals {
-    config = yamldecode(file("../vars.yaml"))
-}
-
-{% for instance in clusters -%}
-{% if instance.cluster.create is true -%}
+{%- if ns.aws %}
+    {%- for cluster in clusters %}
+        {%- if cluster.cloud == "aws" %}
+            {% if cluster.cluster.create is true %}
 provider "rhcs" {
-    alias = "{{ instance.name }}"
-    token = "{{ instance.cluster.providerCredentials.rosa_token }}"
+    alias = "{{ cluster.name }}"
+    token = "{{ cluster.cluster.providerCredentials.rosa_token }}"
     url   = "https://api.openshift.com"
 }
 
 provider "aws" {
-    alias = "{{ instance.name }}"
-    region = "{{ instance.cluster.providerCredentials.region }}"
-    access_key = "{{ instance.cluster.providerCredentials.aws_access_key_id }}"
-    secret_key = "{{ instance.cluster.providerCredentials.aws_secret_access_key }}"
+    alias = "{{ cluster.name }}"
+    region = "{{ cluster.cluster.providerCredentials.region }}"
+    access_key = "{{ cluster.cluster.providerCredentials.aws_access_key_id }}"
+    secret_key = "{{ cluster.cluster.providerCredentials.aws_secret_access_key }}"
     ignore_tags {
         key_prefixes = ["kubernetes.io/"]
     }
 }
+            {%- endif %}
+        {%- endif %}
+    {%- endfor %}
+{%- endif %}
 
+{%- if ns.aro %}
+    {%- for cluster in clusters %}
+        {%- if cluster.cloud == "azure" %}
+            {% if cluster.cluster.create is true %}
+provider "azurerm" {
+    alias           = "{{ cluster.name }}"
+    client_id       = "{{ cluster.cluster.providerCredentials.client_id }}"
+    client_secret   = "{{ cluster.cluster.providerCredentials.client_secret }}"
+    subscription_id = "{{ cluster.cluster.providerCredentials.subscription_id }}"
+    tenant_id       = "{{ cluster.cluster.providerCredentials.tenant_id }}"
+
+    features {
+        resource_group {
+            prevent_deletion_if_contains_resources = false
+        }
+    }
+}
+
+provider "azuread" {
+    alias       = "{{ cluster.name }}"
+    client_id       = "{{ cluster.cluster.providerCredentials.client_id }}"
+    client_secret   = "{{ cluster.cluster.providerCredentials.client_secret }}"
+    tenant_id   = "{{ cluster.cluster.providerCredentials.tenant_id }}"
+}
+            {%- endif %}
+        {%- endif %}
+    {%- endfor %}
+{%- endif %}
+
+{%- for instance in clusters %}
+{% if instance.cluster.create is true %}
 module "{{ instance.name }}" {
     source = "github.com/poc-examples/terraform-clusters//modules/{{ instance.cloud }}/{{ instance.type }}"
 
-    region                  = "{{ instance.cluster.providerCredentials.region }}"
+    providers = {
+        {%- if instance.cloud == "aws" %}
+        aws  = aws.{{ instance.name }}
+        rhcs = rhcs.{{ instance.name }}
+        {%- endif %}
+        {%- if instance.cloud == "azure" %}
+        azurerm  = azurerm.{{ instance.name }}
+        azuread  = azuread.{{ instance.name }}
+        {%- endif %}
+    }
+
     cluster_name            = "{{ instance.name }}"
+
+    {%- if instance.cloud == "aws" %}
+    region                  = "{{ instance.cluster.providerCredentials.region }}"
     offline_token           = "{{ instance.cluster.providerCredentials.rosa_token }}"
     admin_credentials       = local.config.openshift.credentials.admin
     worker_node_replicas    = {{ instance.cluster.compute.workers }}
     rosa_openshift_version  = "{{ instance.cluster.version }}"
+    {%- endif %}
 
-    providers = {
-        aws  = aws.{{ instance.name }}
-        rhcs = rhcs.{{ instance.name }}
+    {%- if instance.cloud == "azure" %}
+    location                = "{{ instance.cluster.providerCredentials.location }}"
+    resource_group_name     = "{{ instance.cluster.providerCredentials.resource_group_name }}"
+    aro_version             = "{{ instance.cluster.version }}"
+    worker_node_count       = {{ instance.cluster.compute.workers }}
+    subscription_id         = "{{ instance.cluster.providerCredentials.subscription_id }}"
+    client_secret           = "{{ instance.cluster.providerCredentials.client_secret }}"
+    {%- endif %}
+
+    tags    = {
+        environment = "{{ instance.cluster.workshop.chart.settings.stage }}"
     }
 
 }
+{%- endif %}
+{%- endfor %}
 
+{%- for instance in clusters %}
+{% if instance.cluster.create is true %}
 output "{{ instance.name }}_api_url" {
     value       = module.{{ instance.name }}.api_url
     sensitive   = true
@@ -59,5 +147,5 @@ output "{{ instance.name }}_domain" {
     value       = module.{{ instance.name }}.domain
     sensitive   = true
 }
-{% endif %}
-{% endfor %}
+{%- endif %}
+{%- endfor -%}
