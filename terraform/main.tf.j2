@@ -126,6 +126,7 @@ module "{{ instance.name }}" {
     worker_node_count       = {{ instance.cluster.compute.workers }}
     subscription_id         = "{{ instance.cluster.providerCredentials.subscription_id }}"
     client_secret           = "{{ instance.cluster.providerCredentials.client_secret }}"
+    pull_secret             = local.config.openshift.pullsecret
     {%- endif %}
 
     tags    = {

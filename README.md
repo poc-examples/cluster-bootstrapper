@@ -24,12 +24,15 @@ Cluster Bootstrapper is a multi-cluster orchestration tool designed for spinning
 - [Troubleshooting](https://poc-examples.github.io/cluster-bootstrapper/quickstart/troubleshooting.html)
 
 ## Deployment Time Expectations
-| Platform | Cluster Build | Workload Deploy |
-| -------- | ------------- | --------------- |
-| AWS ROSA | ~40 min       | ~15 min         | 
-| AWS HCP  | Coming Soon   |                 |
-| Azure/ARO| Coming Soon   |                 |
-| ARO      | Coming Soon   |                 |
+| Platform | Cluster Build | Settle Time | Workload Deploy |
+| -------- | ------------- | ----------- |---------------- |
+| AWS ROSA | ~40 min       | ~5 min      |~15 min          | 
+| AWS HCP  | Coming Soon   |             |                 |
+| Azure/ARO| ~40 min       | ~5 min      |~15 min          |
+| ARO      | Coming Soon   |             |                 |
+
+- Settle Time: The time it takes for the cluster kubeadmin pods to settle after cluster creation before running the `make configure`
+- Workload Deploy: The time it takes for azure to deploy the workshop charts via GitOps
 
 ## Considerations
 

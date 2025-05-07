@@ -1,10 +1,11 @@
 openshift:
 
   credentials:
-    admin:
-      username: "{{ CLUSTER_USERNAME }}"
-      # Should be 14+ chars, upper and lower, with special characters
-      password: "{{ CLUSTER_PASSWORD }}"
+
+    ## Allows Keycloak User Autoregistration
+    # registrationAllowed: true
+
+    ## Creates Initial Users & Binds them to a group
     users:
       - username: "admin"
         password: "{{ CLUSTER_PASSWORD }}"
@@ -15,48 +16,53 @@ openshift:
     vault:
       token: "{{ VAULT_TOKEN }}"
 
+  ## Provides the Pull secret for Microsoft Azure Opt in
+  pullsecret: '<YOUR_PULL_SECRET>'
+
   clusters:
 
     # - name: service-cbe-1
     #   type: aro # local, hcp, rosa, aro
-    #   version: 4.17.4
+    #   version: 4.16.30
     #   create: true
     #   compute:
     #     workers: 6
     #   providerCredentials:
-    #     aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
-    #     aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
-    #     region: "us-east-2"
-    #     rosa_token: "{{ ROSA_TOKEN }}"
+    #     client_id: "<CLIENT_ID>"
+    #     client_secret: "<CLIENT_SECRET>"
+    #     subscription_id: "<SUBSCRIPTION_ID>"
+    #     tenant_id: "<TENANT_ID>"
+    #     resource_group_name: "<RESOURCE_GROUP_NAME>"
+    #     location: "<LOCATION>"
     #   workshop:
     #     chart:
     #       enabled: true
     #       name: services-cluster
-    #       version: 0.0.7
+    #       version: 0.0.14
     #       repo: https://poc-examples.github.io/workshops
     #       settings:
     #         role: workload
     #         stage: dev
-    #     # sharedClusterRef: shared-cbe-1
+    #     sharedClusterRef: shared-cbe-1
 
     - name: shared-cbe-1
       type: aro # local, hcp, rosa, aro
-      version: 4.17.4
+      version: 4.16.30
       create: true
       compute:
         workers: 6
       providerCredentials:
-        client_id: "{{ CLIENT_ID }}"
-        client_secret: "{{ CLIENT_SECRET }}"
-        subscription_id: "{{ SUBSCRIPTION_ID }}"
-        tenant_id: "{{ TENANT_ID }}"
-        resource_group_name: "{{ RESOURCE_GROUP_NAME }}"
-        location: "{{ LOCATION }}"
+        client_id: "<CLIENT_ID>"
+        client_secret: "<CLIENT_SECRET>"
+        subscription_id: "<SUBSCRIPTION_ID>"
+        tenant_id: "<TENANT_ID>"
+        resource_group_name: "<RESOURCE_GROUP_NAME>"
+        location: "<LOCATION>"
       workshop:
         chart:
           enabled: true
           name: services-cluster
-          version: 0.0.5
+          version: 0.0.14
           repo: https://poc-examples.github.io/workshops
           settings:
             role: shared
