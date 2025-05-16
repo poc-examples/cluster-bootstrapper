@@ -3,7 +3,7 @@ openshift:
   credentials:
 
     ## Allows Keycloak User Autoregistration
-    # registrationAllowed: true
+    registrationAllowed: true
 
     ## Creates Initial Users & Binds them to a group
     users:
@@ -16,8 +16,7 @@ openshift:
     vault:
       token: "{{ VAULT_TOKEN }}"
 
-  ## Provides the Pull secret for Microsoft Azure Opt in
-  pullsecret: '<YOUR_PULL_SECRET>'
+  pullsecret: '{{ PULL_SECRET }}'
 
   clusters:
 
@@ -38,7 +37,7 @@ openshift:
     #     chart:
     #       enabled: true
     #       name: services-cluster
-    #       version: 0.0.14
+    #       version: 0.0.11
     #       repo: https://poc-examples.github.io/workshops
     #       settings:
     #         role: workload
@@ -52,18 +51,18 @@ openshift:
       compute:
         workers: 6
       providerCredentials:
-        client_id: "<CLIENT_ID>"
-        client_secret: "<CLIENT_SECRET>"
-        subscription_id: "<SUBSCRIPTION_ID>"
-        tenant_id: "<TENANT_ID>"
-        resource_group_name: "<RESOURCE_GROUP_NAME>"
-        location: "<LOCATION>"
+        client_id: "{{ CLIENT_ID }}"
+        client_secret: "{{ CLIENT_SECRET }}"
+        subscription_id: "{{ SUBSCRIPTION_ID }}"
+        tenant_id: "{{ TENANT_ID }}"
+        resource_group_name: "{{ RESOURCE_GROUP_NAME }}"
+        location: "eastus"
       workshop:
         chart:
           enabled: true
-          name: services-cluster
-          version: 0.0.14
-          repo: https://poc-examples.github.io/workshops
+          name: orchestrator
+          version: 0.0.38
+          repo: https://poc-examples.github.io/charts
           settings:
-            role: shared
+            role: workload
             stage: prod

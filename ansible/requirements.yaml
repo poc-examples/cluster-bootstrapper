@@ -18,3 +18,6 @@ collections:
 
   - name: community.okd
     source: https://galaxy.ansible.com
+
+  - name: operator_sdk.util
+    source: https://galaxy.ansible.com
