@@ -4,7 +4,7 @@
 
 {%- for cluster in clusters -%}
     {%- if cluster.cloud == "azure" -%}
-        {%- set ns.aro = True -%}
+        {%- set ns.azure = True -%}
     {%- endif -%}
     {%- if cluster.cloud == "aws" -%}
         {%- set ns.aws = True -%}
@@ -27,7 +27,7 @@ terraform {
             source  = "terraform-redhat/rhcs"
         }
         {%- endif %}
-        {%- if ns.aro %}
+        {%- if ns.azure %}
         azurerm = {
             source  = "hashicorp/azurerm"
             version = "~>4.27.0"
@@ -64,7 +64,7 @@ provider "aws" {
     {%- endfor %}
 {%- endif %}
 
-{%- if ns.aro %}
+{%- if ns.azure %}
     {%- for cluster in clusters %}
         {%- if cluster.cloud == "azure" %}
             {% if cluster.cluster.create is true %}
