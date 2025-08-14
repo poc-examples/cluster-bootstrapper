@@ -32,6 +32,9 @@ with open(vars_file, 'r') as file:
             if "aro" in cluster["type"]:
                 target_cloud = "azure"
 
+            if "ocp" in cluster["type"]:
+                target_cloud = "azure"
+
         clusters["clusters"].append({
             'cloud': target_cloud,
             'type': cluster['type'] if 'type' in cluster else 'local',
