@@ -1,48 +1,47 @@
 openshift:
 
-  aws:
-    type: rosa
-    # Name can only be 13 chars
-    cluster_name: rosa-rhoai-test
-    version: 4.16.13
-    region: us-east-2
-    workers: 6
+  credentials:
 
-  admin:
-    credentials:
-      username: "{{ CLUSTER_USERNAME }}"
-      # Should be 14+ chars, upper and lower, with special characters
-      password: "{{ CLUSTER_PASSWORD }}"
+    ## Allows Keycloak User Autoregistration
+    registrationAllowed: true
 
-  # https://console.redhat.com/openshift/token/show
-  offline_token: "{{ ROSA_TOKEN }}"
+    admin:
+      username:  "{{ADMIN_USERNAME}}"
+      password: "{{ADMIN_PASSWORD}}"
 
-config:
+    ## Creates Initial Users & Binds them to a group
+    users:
+      - username: "admin"
+        password: "{{ADMIN_PASSWORD}}"
+        group: "cluster-admins"
 
-  validate_certs: false
+    # Will Adjust Later for OIDC
+    # But currently need a fast solution
+    vault:
+      token: "{{VAULT_PASSWORD}}"
 
-  gitops:
-    enabled: true
-    channel: gitops-1.14
-    namespace: openshift-gitops
+  clusters:
 
-  workshop:
-    chart:
-      enabled: true
-      name: rhoai-devex
-      version: 0.1.45
-      repo: https://poc-examples.github.io/workshops
-
-  # Optional: This section optional creates additional user defined secrets.
-  # The Secrets are placed in the set secrets.namespace and are accessible with the k8s clustersecretstore.
-  secrets:
-    namespace: secrets-manager
-    pushSecrets: []
-
-      # - name: example-secret
-      #   secrets:
-      #     AWS_ACCESS_KEY_ID: <access_key_id>
-      #     AWS_DEFAULT_REGION: us-east-2
-      #     AWS_SECRET_ACCESS_KEY: <secret_access_key>
-      #     AWS_S3_BUCKET: <bucket>
-      #     AWS_S3_ENDPOINT: https://s3.us-east-2.amazonaws.com
+    - name: "{{CLUSTER_NAME}}"
+      type: hcp # local, hcp, rosa, aro
+      # version: 4.17.39
+      create: false
+      # compute:
+      #   workers: 6
+      domain: "{{DOMAIN}}"
+      port: 443
+      providerCredentials:
+        aws_access_key_id: "{{AWS_ACCESS_KEY_ID}}"
+        aws_secret_access_key: "{{AWS_SECRET_ACCESS_KEY}}"
+        region: "us-east-2"
+        # https://console.redhat.com/openshift/token/rosa/show
+        rosa_token: "{{OFFLINE_TOKEN}}"
+      workshop:
+        chart:
+          enabled: true
+          name: orchestrator
+          version: 0.0.89
+          repo: https://poc-examples.github.io/charts
+          settings:
+            role: shared
+            stage: dev

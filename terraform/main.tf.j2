@@ -129,10 +129,6 @@ module "{{ instance.name }}" {
     pull_secret             = local.config.openshift.pullsecret
     {%- endif %}
 
-    tags    = {
-        environment = "{{ instance.cluster.workshop.chart.settings.stage }}"
-    }
-
 }
 {%- endif %}
 {%- endfor %}
