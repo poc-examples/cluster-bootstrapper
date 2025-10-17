@@ -10,3 +10,4 @@ terraform/*
 !terraform/providers.tf
 !terraform/outputs.tf
 !terraform/main.tf.j2
+config.yaml
